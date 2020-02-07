@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">WeTravel</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="login">Login to my account</string>
+    <string name="cannotAccessToYourAccount">Cannot access to your account? ></string>
+    <string name="title_activity_maps">Map</string>
+    <string name="newHere"><![CDATA[New here? Create an account >]]></string>
 </resources>
