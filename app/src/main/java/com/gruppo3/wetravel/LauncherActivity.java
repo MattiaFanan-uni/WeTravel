@@ -1,8 +1,12 @@
 package com.gruppo3.wetravel;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -27,11 +31,12 @@ public class LauncherActivity extends AppCompatActivity {
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(uiOptions);
 
-        // Adding icon in each EditText
+        // Adding icon in each TextView
         TextView[] textViewArray = new TextView[] { findViewById(R.id.textViewtUsername), findViewById(R.id.textViewPassword) };
-        for (TextView textView : textViewArray) {
-            textView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.user, 0, 0, 0);
-            textView.setCompoundDrawablePadding(32);
+        int[] iconsResId = new int[] { R.drawable.user, R.drawable.password };
+        for (int i = 0; i < textViewArray.length; i++) {
+            textViewArray[i].setCompoundDrawablesWithIntrinsicBounds(iconsResId[i], 0, 0, 0);
+            textViewArray[i].setCompoundDrawablePadding(32);
         }
     }
 
@@ -40,6 +45,7 @@ public class LauncherActivity extends AppCompatActivity {
      * @param v Clicked view
      */
     public void buttonLogin_onClick(View v) {
+        // TODO: Manage LauncherActivity closing
         Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
     }
