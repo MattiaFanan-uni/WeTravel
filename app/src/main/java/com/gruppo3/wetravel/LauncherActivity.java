@@ -1,12 +1,8 @@
 package com.gruppo3.wetravel;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -46,7 +42,7 @@ public class LauncherActivity extends AppCompatActivity {
      */
     public void buttonLogin_onClick(View v) {
         // TODO: Manage LauncherActivity closing
-        Intent intent = new Intent(this, MapsActivity.class);
+        Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);
     }
 }
