@@ -2,11 +2,14 @@ package com.gruppo3.wetravel;
 
 import com.eis.communication.network.NetDictionary;
 import com.eis.smsnetwork.SMSJoinableNetManager;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class DummyResDict implements NetDictionary<String, String> {
 
@@ -60,5 +63,25 @@ public class DummyResDict implements NetDictionary<String, String> {
     @Override
     public String getResource(String key) {
         return dict.get(key);
+    }
+
+    public ArrayList<User> getUsers(LatLng position, Double radius) {
+
+        ArrayList<User> toReturn = new ArrayList<>();
+
+
+        Object[] array = dict.entrySet().toArray();
+
+        for (Object o : array) {
+            Map.Entry<String, String> entry = (Map.Entry<String, String>) o;
+
+            LatLng toCheck=Helper.convertStringToLatLng(entry.getValue());
+            double distance=Helper.meterDistance(position,toCheck);
+
+            if(Helper.meterDistance(position,toCheck)<=radius)
+                toReturn.add(new User(entry.getKey(),toCheck));
+        }
+
+        return toReturn;
     }
 }
