@@ -1,5 +1,7 @@
 package com.gruppo3.wetravel;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -22,34 +24,70 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
  * This activity needs ACCESS_FINE_LOCATION (or ACCESS_COURSE_LOCATION) permission.<br>
  * Because of using FusedLocationProviderClient, it needs Google Play Services installed too.<br>
  * No checks for this condition are made because are already done by Google Maps fragment.<br>
  * When Google Play Services are ready to work, {@link #onMapReady(GoogleMap) onMapReady} is called and the activity can start doing its job.
+ * Can be set a custom location request interval using Intent extras (see Constant Field values)
  */
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback {
 
     /**
-     * Request code for ACCESS_FINE_LOCATION permission.
+     * Tag for sending map zoom level via Intent extras.
      */
-    private final int ACCESS_FINE_LOCATION_REQUEST_CODE = 1;
+    public static final String MAP_ZOOM_TAG = "mapZoom";
 
-    private int locationRequestInterval = 10000;
-    private int locationRequestFastestInterval = 1000;
-    private int zoomLevel = 17;
+    /**
+     * Tag for sending location request interval via Intent extras.
+     */
+    public static final String LOCATION_REQUEST_INTERVAL_TAG = "lrInterval";
+
+    /**
+     * Tag for sending location request fastest interval via Intent extras.
+     */
+    public static final String LOCATION_REQUEST_FASTEST_INTERVAL_TAG = "lrFastestInterval";
+
+    private final int ACCESS_FINE_LOCATION_REQUEST_CODE = 1; // Request code for ACCESS_FINE_LOCATION permission
+
+    private int locationRequestInterval = 10000; // How much time (in ms) passes between two location requests. This parameter affects device battery consumption
+    private int locationRequestFastestInterval = 1000; // If a location is available sooner than locationRequestInterval, than this is the minimum rate this app will acquire this location update
+    private int mapZoom = 17; // Map zoom level. 17 is about the same zoom level used by Google Maps
+
+    private boolean mapReady = false; // Boolean value that indicates whether or not the map is ready to work
 
     private GoogleMap mMap = null; // Main map obj reference
-    private FusedLocationProviderClient fusedLocationProviderClient;
-    private LocationRequest locationRequest;
+    private FusedLocationProviderClient fusedLocationProviderClient; // Needed for acquiring location updates
+    private LocationRequest locationRequest; // Needed for requesting location updates
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            // Map zoom level
+            // See also: https://developers.google.com/android/reference/com/google/android/gms/maps/model/CameraPosition.Builder.html#zoom(float)
+            if (extras.containsKey(MAP_ZOOM_TAG))
+                mapZoom = extras.getInt(MAP_ZOOM_TAG);
+
+            // locationRequestInterval
+            // See also: https://developers.google.com/android/reference/com/google/android/gms/location/LocationRequest.html#setInterval(long)
+            if (extras.containsKey(LOCATION_REQUEST_INTERVAL_TAG))
+                locationRequestInterval = extras.getInt(LOCATION_REQUEST_INTERVAL_TAG);
+
+            // locationRequestFastestInterval
+            // See also: https://developers.google.com/android/reference/com/google/android/gms/location/LocationRequest.html#setFastestInterval(long)
+            if (extras.containsKey(LOCATION_REQUEST_FASTEST_INTERVAL_TAG))
+                locationRequestFastestInterval = extras.getInt(LOCATION_REQUEST_FASTEST_INTERVAL_TAG);
+        }
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -68,31 +106,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     }
 
     /**
-     * Set interval for active location updates, in milliseconds.
-     * @see <a href="https://developers.google.com/android/reference/com/google/android/gms/location/LocationRequest.html#setInterval(long)">LocationRequest.setInterval</a>
-     */
-    public void setLocationRequestInterval(int locationRequestInterval) {
-        this.locationRequestInterval = locationRequestInterval;
-    }
-
-    /**
-     * Explicitly set the fastest interval for location updates, in milliseconds.<br>
-     * This controls the fastest rate at which your application will receive location updates, which might be faster than setInterval(long) in some situations (for example, if other applications are triggering location updates).
-     * @see <a href="https://developers.google.com/android/reference/com/google/android/gms/location/LocationRequest.html#setFastestInterval(long)">LocationRequest.setFastestInterval</a>
-     */
-    public void setLocationRequestFastestInterval(int locationRequestFastestInterval) {
-        this.locationRequestFastestInterval = locationRequestFastestInterval;
-    }
-
-    /**
-     * Set zoom level when centering the camera on current location.
-     * @see <a href="https://developers.google.com/android/reference/com/google/android/gms/maps/model/CameraPosition.Builder.html#zoom(float)">CameraPosition.Builder</a>
-     */
-    public void setZoomLevel(int zoomLevel) {
-        this.zoomLevel = zoomLevel;
-    }
-
-    /**
      * This callback is triggered when the map is ready to be used.
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
@@ -103,11 +116,51 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         mMap = googleMap;
 
         locationRequest = new LocationRequest();
-        locationRequest.setInterval(locationRequestInterval); // Maximum waiting time
-        locationRequest.setFastestInterval(locationRequestFastestInterval); // Minimum waiting time - if a location is retrieved before then expected
-        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY); // This parameter affect battery consumption and location accuracy
+        locationRequest.setInterval(locationRequestInterval);
+        locationRequest.setFastestInterval(locationRequestFastestInterval);
+        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY); // This parameter affects battery consumption and location accuracy
 
         checkPermissions(); // Checks (and eventually asks for) permissions needed by this activity
+
+        // If user moves the map, we stop following current location
+        mMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
+            @Override
+            public void onCameraMoveStarted(int reason) {
+                if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE)
+                    fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+            }
+        });
+
+        // If user clicks on MyLocation button, we resume following current location
+        mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+            @Override
+            public boolean onMyLocationButtonClick() {
+                fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
+                return false;
+            }
+        });
+
+        mapReady = true;
+    }
+
+    /**
+     * Checks if main map on this activity is ready to accomplish operations.
+     * @return Boolean value indicating if the map is ready to accomplish operations or not
+     */
+    public boolean isMapReady() {
+        return mapReady;
+    }
+
+    public void addMarker(@NonNull LatLng latLng, @Nullable String title, float color, @Nullable Object o) {
+        MarkerOptions markerOptions = new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.defaultMarker(color));
+
+        if (title != null)
+            markerOptions.title(title);
+
+        if (o != null)
+            mMap.addMarker(markerOptions).setTag(o);
+        else
+            mMap.addMarker(markerOptions);
     }
 
     /**
@@ -176,7 +229,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         public void onLocationResult(LocationResult locationResult) {
             Location location = locationResult.getLastLocation();
             CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .zoom(zoomLevel)
+                    .zoom(mapZoom)
                     .target(new LatLng(location.getLatitude(), location.getLongitude()))
                     .build();
 
