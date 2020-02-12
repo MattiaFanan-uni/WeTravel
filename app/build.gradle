@@ -29,14 +29,17 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
     implementation 'com.google.android.gms:play-services-location:17.0.0'
 
+    //Instrumented tests
+    androidTestImplementation 'com.android.support:support-annotations:24.0.0'
+    androidTestImplementation 'com.android.support.test:runner:0.5'
     //SMSLibrary
     implementation 'com.github.Cogno-IDU:smslibrary:v2.2'
     //NET
     implementation 'com.github.EIS0:network-dictionary:v0.3'
-    //ROOM
+    /*//ROOM
     def room_version = "2.2.3"
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
     // Test helpers
-    testImplementation "androidx.room:room-testing:$room_version"
+    testImplementation "androidx.room:room-testing:$room_version"*/
 }

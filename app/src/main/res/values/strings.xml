@@ -6,4 +6,6 @@
     <string name="cannotAccessToYourAccount">Cannot access to your account? ></string>
     <string name="title_activity_maps">Map</string>
     <string name="newHere">New here? Create an account ></string>
+    <integer name="DATABASE_VERSION">1</integer>
+    <string name="DATABASE_NAME">WeTravel.db</string>
 </resources>
