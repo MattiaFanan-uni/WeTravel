@@ -42,9 +42,10 @@ public class DBDictionaryHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_RESOURCES =
             "CREATE TABLE " + DBDictionaryContract.Resources.TABLE_NAME +
                     " ( " +
-                    DBDictionaryContract.Resources.COLUMN_KEY + " TEXT PRIMARY KEY , "+
-                    DBDictionaryContract.Resources.COLUMN_RESOURCE + " TEXT "+
+                    DBDictionaryContract.Resources.COLUMN_ID + " TEXT PRIMARY KEY , "+
+                    DBDictionaryContract.Resources.COLUMN_VALUE + " TEXT "+
                     ");";
+    //TODO should we add a FK for Key to Phone Number?
 
     private static final String SQL_DELETE_RESOURCES =
             "DROP TABLE IF EXISTS " + DBDictionaryContract.Resources.TABLE_NAME;

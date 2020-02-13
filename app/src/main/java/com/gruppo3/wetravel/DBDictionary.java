@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.Location;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -11,7 +12,9 @@ import androidx.annotation.VisibleForTesting;
 import com.eis.communication.network.NetDictionary;
 import com.eis.communication.network.NetSubscriberList;
 import com.eis.smslibrary.SMSPeer;
+import com.google.android.gms.maps.model.LatLng;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,6 +29,7 @@ public class DBDictionary implements NetDictionary<String, String>, NetSubscribe
 
     /**
      * Used to instantiate in memory DB faster for testing
+     *
      * @param context
      * @param version
      */
@@ -46,8 +50,8 @@ public class DBDictionary implements NetDictionary<String, String>, NetSubscribe
         SQLiteDatabase writableDB = helper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(DBDictionaryContract.Resources.COLUMN_KEY, key);
-        values.put(DBDictionaryContract.Resources.COLUMN_RESOURCE, resource);
+        values.put(DBDictionaryContract.Resources.COLUMN_ID, key);
+        values.put(DBDictionaryContract.Resources.COLUMN_VALUE, resource);
 
         writableDB.insert(DBDictionaryContract.Resources.TABLE_NAME, null, values);
     }
@@ -62,7 +66,7 @@ public class DBDictionary implements NetDictionary<String, String>, NetSubscribe
         SQLiteDatabase writableDB = helper.getWritableDatabase();
 
         // Define 'where' part of query.
-        String selection = DBDictionaryContract.Resources.COLUMN_KEY + " LIKE ?";
+        String selection = DBDictionaryContract.Resources.COLUMN_ID + " LIKE ?";
         // Specify arguments in placeholder order.
         String[] selectionArgs = {key};
         // Issue SQL statement.
@@ -82,7 +86,7 @@ public class DBDictionary implements NetDictionary<String, String>, NetSubscribe
 
 
         // Filter results
-        String selection = DBDictionaryContract.Resources.COLUMN_KEY + " LIKE ?";
+        String selection = DBDictionaryContract.Resources.COLUMN_ID + " LIKE ?";
         String[] selectionArgs = {key};
 
         Cursor cursor = db.query(
@@ -96,7 +100,7 @@ public class DBDictionary implements NetDictionary<String, String>, NetSubscribe
         );
 
         if (cursor.moveToNext())
-            return cursor.getString(cursor.getColumnIndexOrThrow(DBDictionaryContract.Resources.COLUMN_RESOURCE));
+            return cursor.getString(cursor.getColumnIndexOrThrow(DBDictionaryContract.Resources.COLUMN_VALUE));
 
         return null;
     }
@@ -156,6 +160,42 @@ public class DBDictionary implements NetDictionary<String, String>, NetSubscribe
         String[] selectionArgs = {subscriber.getAddress()};
         // Issue SQL statement.
         writableDB.delete(DBDictionaryContract.Subscibers.TABLE_NAME, selection, selectionArgs);
+    }
+
+    public ArrayList<Partake> getClosestPartakes(LatLng position, Double radius) {
+
+        ArrayList<Partake> toReturn = new ArrayList<>();
+        SQLiteDatabase db = helper.getReadableDatabase();
+        String query = "select * from " + DBDictionaryContract.Resources.TABLE_NAME;
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        while (cursor.moveToNext()) {
+
+            int resIndex = cursor.getColumnIndexOrThrow(DBDictionaryContract.Resources.COLUMN_VALUE);
+            int keyIndex = cursor.getColumnIndexOrThrow(DBDictionaryContract.Resources.COLUMN_ID);
+
+            LatLng partakePosition = convertStringToLatLng(cursor.getString(resIndex));
+
+            float[] result=new float[1];
+            Location.distanceBetween(position.latitude,position.longitude,partakePosition.latitude,partakePosition.longitude,result);
+
+            if (result[0] <= radius) {
+                SMSPeer partakeOwner = new SMSPeer(cursor.getString(keyIndex));
+                toReturn.add(Partake.create(partakeOwner, partakePosition));
+            }
+        }
+
+        return toReturn;
+    }
+
+    public static String convertLatLngToString(LatLng latLng) {
+        return latLng.latitude + "#" + latLng.longitude;
+    }
+
+    public static LatLng convertStringToLatLng(String string) {
+        String[] split = string.split("#");
+        return new LatLng(Double.parseDouble(split[0]), Double.parseDouble(split[1]));
     }
 
     //TODO this should be a method for the intent o something similar

@@ -13,6 +13,7 @@ public final class DBDictionaryContract {
      */
     public static class Subscibers implements BaseColumns {
         public static final String TABLE_NAME = "subscribers";
+
         public static final String COLUMN_PHONE_NUMBER = "phone_number";
     }
 
@@ -21,8 +22,8 @@ public final class DBDictionaryContract {
      */
     public static class Resources implements BaseColumns {
         public static final String TABLE_NAME = "resources";
-        //TODO change key
-        public static final String COLUMN_KEY = "[key]";//because key is a reserved word in sql
-        public static final String COLUMN_RESOURCE = "resource";
+
+        public static final String COLUMN_ID = "identifier";//don't use key cause is reserved in sql
+        public static final String COLUMN_VALUE = "value";
     }
 }
