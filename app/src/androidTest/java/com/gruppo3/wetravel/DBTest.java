@@ -80,25 +80,25 @@ public class DBTest {
     }
 
 
-    private Partake center=Partake.create(subscriber, new LatLng(0, 0));
+    private Partake center=new Partake(subscriber, new LatLng(0, 0));
 
     private double radius=4000;//4km
 
     private Partake[] closest={
 
-            Partake.create("+12027621401",new LatLng(0.01,0.01)),
-            Partake.create("+12027621501",new LatLng(0.02,0.01)),
-            Partake.create("+12027621601",new LatLng(0.01,0.02)),
-            Partake.create("+12027621701",new LatLng(0.02,0.02))
+            new Partake("+12027621401",new LatLng(0.01,0.01)),
+            new Partake("+12027621501",new LatLng(0.02,0.01)),
+            new Partake("+12027621601",new LatLng(0.01,0.02)),
+            new Partake("+12027621701",new LatLng(0.02,0.02))
 
     };
 
     private Partake[] notClose={
 
-            Partake.create("+12027621801",new LatLng(0.05,0.05)),
-            Partake.create("+12027621901",new LatLng(0.2,0.1)),
-            Partake.create("+12027622001",new LatLng(0.3,0.2)),
-            Partake.create("+12027622101",new LatLng(0.2,0.02))
+            new Partake("+12027621801",new LatLng(0.05,0.05)),
+            new Partake("+12027621901",new LatLng(0.2,0.1)),
+            new Partake("+12027622001",new LatLng(0.3,0.2)),
+            new Partake("+12027622101",new LatLng(0.2,0.02))
 
     };
 

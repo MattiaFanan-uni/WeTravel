@@ -1,5 +1,6 @@
 package com.gruppo3.wetravel;
 
+import com.eis.smsnetwork.SMSJoinableNetManager;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.junit.Assert;

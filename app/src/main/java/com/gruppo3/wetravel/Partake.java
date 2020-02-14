@@ -4,20 +4,29 @@ import android.location.Location;
 
 import com.eis.smslibrary.SMSPeer;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.auto.value.AutoValue;
 
-@AutoValue
-public abstract class Partake {
-    public abstract SMSPeer getOwner();
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import lombok.Setter;
 
-    public abstract LatLng getPosition();
+@Data
+@AllArgsConstructor
+public class Partake {
 
-    public static Partake create(SMSPeer owner, LatLng position) {
-        return new AutoValue_Partake(owner, position);
-    }
+    @Setter(AccessLevel.NONE)
+    @NonNull
+    private SMSPeer owner;
 
-    public static Partake create(String owner, LatLng position) {
-        return new AutoValue_Partake(new SMSPeer(owner), position);
+    @NonNull
+    @Setter(AccessLevel.NONE)
+    @EqualsAndHashCode.Exclude
+    private LatLng position;
+
+    public Partake(String phoneNumber, LatLng position){
+        this(new SMSPeer(phoneNumber),position);
     }
 
     public double meterDistance(LatLng position) {
