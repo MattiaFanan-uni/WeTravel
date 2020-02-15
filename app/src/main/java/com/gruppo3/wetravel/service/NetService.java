@@ -6,10 +6,17 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.eis.communication.network.Invitation;
+import com.eis.communication.network.JoinableNetworkManager;
+import com.eis.communication.network.listeners.GetResourceListener;
+import com.eis.communication.network.listeners.InviteListener;
+import com.eis.communication.network.listeners.JoinInvitationListener;
+import com.eis.communication.network.listeners.RemoveResourceListener;
+import com.eis.communication.network.listeners.SetResourceListener;
 import com.eis.smslibrary.SMSPeer;
+import com.eis.smsnetwork.SMSFailReason;
 import com.eis.smsnetwork.SMSJoinableNetManager;
 import com.google.android.gms.maps.model.LatLng;
 import com.gruppo3.wetravel.DBDictionary;
@@ -17,10 +24,8 @@ import com.gruppo3.wetravel.Partake;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
-public class NetService extends Service {
+public class NetService extends Service implements JoinableNetworkManager<String, String, SMSPeer, SMSFailReason, Invitation<SMSPeer>> {
 
     private final IBinder binder = new DBServiceBinder();
     private DBDictionary dictionary;
@@ -38,6 +43,74 @@ public class NetService extends Service {
     private DBDictionary changeDB(Context context) {
         dictionary.close();
         return new DBDictionary(context);
+    }
+
+    /**
+     * Method used to join the network after an invitation in received.
+     *
+     * @param invitation The invitation previously received.
+     */
+    @Override
+    public void acceptJoinInvitation(Invitation<SMSPeer> invitation) {
+        SMSJoinableNetManager.getInstance().acceptJoinInvitation(invitation);
+    }
+
+    /**
+     * Sets the listener used to wait for invitations to join the network.
+     *
+     * @param joinInvitationListener Listener called upon invitation received.
+     */
+    @Override
+    public void setJoinInvitationListener(JoinInvitationListener<Invitation<SMSPeer>> joinInvitationListener) {
+        SMSJoinableNetManager.getInstance().setJoinInvitationListener(joinInvitationListener);
+    }
+
+    /**
+     * Saves a resource value in the network for the specified key. If the save is successful
+     * {@link SetResourceListener#onResourceSet(Object, Object)} is be called.
+     *
+     * @param key                 The key identifier for the resource.
+     * @param value               The identified value of the resource.
+     * @param setResourceListener Listener called on resource successfully saved or on fail.
+     */
+    @Override
+    public void setResource(String key, String value, SetResourceListener<String, String, SMSFailReason> setResourceListener) {
+        SMSJoinableNetManager.getInstance().setResource(key, value, setResourceListener);
+    }
+
+    /**
+     * Retrieves a resource value from the network for the specified key. The value is returned inside
+     * {@link GetResourceListener#onGetResource(Object, Object)}.
+     *
+     * @param key                 The key identifier for the resource.
+     * @param getResourceListener Listener called on resource successfully retrieved or on fail.
+     */
+    @Override
+    public void getResource(String key, GetResourceListener<String, String, SMSFailReason> getResourceListener) {
+        SMSJoinableNetManager.getInstance().getResource(key, getResourceListener);
+    }
+
+    /**
+     * Removes a resource value from the network for the specified key. If the removal is successful
+     * {@link RemoveResourceListener#onResourceRemoved(Object)} is called
+     *
+     * @param key                    The key identifier for the resource.
+     * @param removeResourceListener Listener called on resource successfully removed or on fail.
+     */
+    @Override
+    public void removeResource(String key, RemoveResourceListener<String, SMSFailReason> removeResourceListener) {
+        SMSJoinableNetManager.getInstance().removeResource(key, removeResourceListener);
+    }
+
+    /**
+     * Invites another user to join the network. If the invitation is sent correctly
+     *
+     * @param peer           The address of the user to invite to join the network.
+     * @param inviteListener Listener called on user invited or on fail.
+     */
+    @Override
+    public void invite(SMSPeer peer, InviteListener<SMSPeer, SMSFailReason> inviteListener) {
+        SMSJoinableNetManager.getInstance().invite(peer, inviteListener);
     }
 
     public class DBServiceBinder extends Binder {
@@ -79,64 +152,6 @@ public class NetService extends Service {
     public void onDestroy() {
         dictionary.close();
         super.onDestroy();
-    }
-
-
-    /**
-     * Adds a resource to the network dictionary
-     */
-    public void addResource(Context client, @NonNull final Partake partake) {
-        if (isClientAuthorized(client))
-            dictionary.addResource(partake.getOwner().getAddress(), DBDictionary.convertLatLngToString(partake.getPosition()));
-    }
-
-    /**
-     * Removes a resource from the dictionary
-     */
-    public void removeResource(Context client, @NonNull final Partake partake) {
-        if (isClientAuthorized(client))
-            dictionary.removeResource(partake.getOwner().getAddress());
-    }
-
-    /**
-     * Returns a resource in the dictionary
-     *
-     * @return Returns a resource corresponding to the key if present in the dictionary,
-     * else returns null
-     */
-    public String getResource(Context client, @NonNull Partake partake) {
-        if (isClientAuthorized(client))
-            return dictionary.getResource(partake.getOwner().getAddress());
-        return null;
-    }
-
-    /**
-     * Adds a subscriber to this network
-     *
-     * @param subscriber The subscriber to add to the net
-     */
-    public void addSubscriber(Context client, SMSPeer subscriber) {
-        if (isClientAuthorized(client))
-            dictionary.addSubscriber(subscriber);
-    }
-
-    /**
-     * @return Returns the set of all the current subscribers to the net
-     */
-    public Set<SMSPeer> getSubscribers(Context client) {
-        if (isClientAuthorized(client))
-            return dictionary.getSubscribers();
-        return new HashSet<SMSPeer>();
-    }
-
-    /**
-     * Removes a given subscriber from the subscribers
-     *
-     * @param subscriber The subscriber to remove
-     */
-    public void removeSubscriber(Context client, SMSPeer subscriber) {
-        if (isClientAuthorized(client))
-            dictionary.removeSubscriber(subscriber);
     }
 
     public ArrayList<Partake> getClosestPartakes(Context client, LatLng position, Double radius) {
