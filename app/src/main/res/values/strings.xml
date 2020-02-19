@@ -6,4 +6,9 @@
     <string name="cannotAccessToYourAccount">Cannot access to your account? ></string>
     <string name="title_activity_maps">Map</string>
     <string name="newHere">New here? Create an account ></string>
+    <string name="title_activity_invitations">Invitations</string>
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
+    <string name="title_activity_friends">Friends</string>
+    <string name="invite">Invite</string>
 </resources>
