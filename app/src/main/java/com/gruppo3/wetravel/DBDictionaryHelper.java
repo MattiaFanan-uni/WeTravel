@@ -6,6 +6,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.VisibleForTesting;
 
+/**
+ * Helper class for operations on the DB
+ */
 public class DBDictionaryHelper extends SQLiteOpenHelper {
 
     public DBDictionaryHelper(Context context) {
@@ -23,18 +26,28 @@ public class DBDictionaryHelper extends SQLiteOpenHelper {
         super(context, name, null, version);
     }
 
+    /**
+     * Creates a DB over a SQLiteDatabase
+     * @param db the connection to SQLiteDatabase
+     */
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_RESOURCES);
         db.execSQL(SQL_CREATE_SUBSCRIBERS);
     }
-
+    /**
+     * Updates a DB over a SQLiteDatabase
+     * @param db the connection to SQLiteDatabase
+     */
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         //TODO select appropriate update policy
         db.execSQL(SQL_DELETE_RESOURCES);
         db.execSQL(SQL_DELETE_SUBSCRIBERS);
         onCreate(db);
     }
-
+    /**
+     * Downgrades a DB over a SQLiteDatabase
+     * @param db the connection to SQLiteDatabase
+     */
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onUpgrade(db, oldVersion, newVersion);
     }

@@ -18,6 +18,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * DBDictionary add persistence to dictionaries used in {@link com.eis.smsnetwork.SMSJoinableNetManager}
+ * @author Mattia Fanan
+ */
 //TODO these methods need to be executed with AsyncTask or IntentService.
 public class DBDictionary implements NetDictionary<String, String>, NetSubscriberList<SMSPeer> {
 
@@ -162,6 +166,12 @@ public class DBDictionary implements NetDictionary<String, String>, NetSubscribe
         writableDB.delete(DBDictionaryContract.SubscriberEntity.TABLE_NAME, selection, selectionArgs);
     }
 
+    /**
+     * Gets all partakes closer than radius from a given position
+     * @param position  the center of the area containing the partakes to return
+     * @param radius    the radius of the area containing the partakes to return
+     * @return all partakes closer than radius from a given position
+     */
     public ArrayList<Partake> getClosestPartakes(LatLng position, Double radius) {
 
         ArrayList<Partake> toReturn = new ArrayList<>();
@@ -189,15 +199,28 @@ public class DBDictionary implements NetDictionary<String, String>, NetSubscribe
         return toReturn;
     }
 
+    /**
+     * Converts a LatLng to a String
+     * @param latLng the position to convert
+     * @return the string converted from the LatLng
+     */
     public static String convertLatLngToString(LatLng latLng) {
         return latLng.latitude + "#" + latLng.longitude;
     }
 
+    /**
+     * Converts a String to a LatLng
+     * @param string the String to convert
+     * @return the LatLng converted from the String
+     */
     public static LatLng convertStringToLatLng(String string) {
         String[] split = string.split("#");
         return new LatLng(Double.parseDouble(split[0]), Double.parseDouble(split[1]));
     }
 
+    /**
+     * Closes the DB connection
+     */
     public void close() {
         helper.close();
     }

@@ -2,6 +2,9 @@ package com.gruppo3.wetravel;
 
 import android.provider.BaseColumns;
 
+/**
+ * Defines DB structure
+ */
 public final class DBDictionaryContract {
     // To prevent someone from accidentally instantiating the contract class,
     // make the constructor private.

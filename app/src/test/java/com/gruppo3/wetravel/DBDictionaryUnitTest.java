@@ -10,7 +10,7 @@ public class DBDictionaryUnitTest  {
 
     @Test
     public void LatLngToStringAndBackEquivalence(){
-        LatLng toTest=new LatLng(123.2345678,2345678.34);
+        LatLng toTest=new LatLng(70.6543,68.987654);
 
         String transformed=DBDictionary.convertLatLngToString(toTest);
 
