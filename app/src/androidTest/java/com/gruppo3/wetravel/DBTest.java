@@ -4,6 +4,9 @@ import androidx.test.core.app.ApplicationProvider;
 
 import com.eis.smslibrary.SMSPeer;
 import com.google.android.gms.maps.model.LatLng;
+import com.gruppo3.wetravel.Persistence.DBDictionary;
+import com.gruppo3.wetravel.Persistence.DBDictionaryHelper;
+import com.gruppo3.wetravel.Persistence.Partake;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -13,7 +16,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.util.ArrayList;
-import java.util.Set;
 
 @RunWith(JUnit4.class)
 public class DBTest {
@@ -29,10 +31,8 @@ public class DBTest {
 
     @Before
     public void init() {
-        dictionary = new DBDictionary(ApplicationProvider.getApplicationContext(), 2);
-       /* dictionary.removeResource(resourceKey);
-        for (SMSPeer sub : subscribers)
-            dictionary.removeSubscriber(sub);*/
+        DBDictionaryHelper inMemoryHelper=new DBDictionaryHelper(ApplicationProvider.getApplicationContext(),null,1);
+        dictionary = new DBDictionary(inMemoryHelper);
     }
 
     @After

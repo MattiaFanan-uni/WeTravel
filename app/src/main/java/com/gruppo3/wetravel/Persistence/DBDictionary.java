@@ -1,4 +1,4 @@
-package com.gruppo3.wetravel;
+package com.gruppo3.wetravel.Persistence;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -22,24 +22,12 @@ import java.util.Set;
  * DBDictionary add persistence to dictionaries used in {@link com.eis.smsnetwork.SMSJoinableNetManager}
  * @author Mattia Fanan
  */
-//TODO these methods need to be executed with AsyncTask or IntentService.
 public class DBDictionary implements NetDictionary<String, String>, NetSubscriberList<SMSPeer> {
 
     private DBDictionaryHelper helper;
 
-    public DBDictionary(Context context) {
-        this.helper = new DBDictionaryHelper(context);
-    }
-
-    /**
-     * Used to instantiate in memory DB faster for testing
-     *
-     * @param context
-     * @param version
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public DBDictionary(Context context, int version) {
-        this.helper = new DBDictionaryHelper(context, null, version);
+    public DBDictionary(DBDictionaryHelper helper) {
+        this.helper = helper;
     }
 
     /**

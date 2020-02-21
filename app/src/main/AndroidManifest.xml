@@ -15,8 +15,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".invActivity"></activity>
-        <activity android:name=".Friends" />
+        <service
+            android:name=".InvitationService"
+            android:enabled="true"
+            android:exported="true"></service>
+
+        <activity
+            android:name=".Activities.NotSubscribedActivity"
+            android:label="@string/title_activity_not_subscribed"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".Activities.invActivity" />
+        <activity android:name=".Activities.FriendsActivity" />
         <activity
             android:name=".Invitation.Friends"
             android:label="@string/title_activity_friends"
@@ -25,7 +34,7 @@
             android:name=".Invitation.Invitation"
             android:label="@string/title_activity_invitations"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".SignUpActivity" />
+        <activity android:name=".Activities.SignUpActivity" />
 
         <meta-data
             android:name="preloaded_fonts"
@@ -34,7 +43,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".LauncherActivity">
+        <activity android:name=".Activities.LauncherActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -42,7 +51,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MapActivity"
+            android:name=".Activities.MapActivity"
             android:label="@string/title_activity_maps" />
     </application>
 

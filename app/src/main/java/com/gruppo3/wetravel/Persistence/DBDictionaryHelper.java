@@ -1,10 +1,12 @@
-package com.gruppo3.wetravel;
+package com.gruppo3.wetravel.Persistence;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.VisibleForTesting;
+
+import com.gruppo3.wetravel.R;
 
 /**
  * Helper class for operations on the DB
