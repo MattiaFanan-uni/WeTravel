@@ -8,4 +8,9 @@
     <string name="newHere">New here? Create an account ></string>
     <integer name="DATABASE_VERSION">1</integer>
     <string name="DATABASE_NAME">WeTravel.db</string>
+    <string name="title_activity_invitations">Invitations</string>
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
+    <string name="title_activity_friends">Friends</string>
+    <string name="invite">Invite</string>
 </resources>
