@@ -23,8 +23,8 @@ public class LauncherActivity extends AppCompatActivity {
         SMSJoinableNetManager.getInstance().setNetSubscriberList(netDictionary);
         SMSJoinableNetManager.getInstance().setNetDictionary(netDictionary);
 
-        //TODO check not subscribed condition
-        if (SMSJoinableNetManager.getInstance().getNetSubscriberList().getSubscribers().size() > 1) {
+
+        if (isSubscribed()) {
             finish();//close this activity
             Intent callMapActivity = new Intent(this, MapActivity.class);
             startActivity(callMapActivity);
@@ -33,6 +33,11 @@ public class LauncherActivity extends AppCompatActivity {
             Intent callNotSubscribedActivity = new Intent(this, NotSubscribedActivity.class);
             startActivity(callNotSubscribedActivity);
         }
+    }
+
+    private boolean isSubscribed(){
+        //TODO check not subscribed condition
+        return SMSJoinableNetManager.getInstance().getNetSubscriberList().getSubscribers().size() > 1;
     }
 
 

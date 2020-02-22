@@ -36,10 +36,10 @@ public class FriendsActivity extends AppCompatActivity {
          */
         friendNumber = findViewById(R.id.friendNumber);
         inviteButton = findViewById(R.id.inviteButton);
-        final SMSPeer friendToInvite = new SMSPeer(friendNumber.getText().toString());
         inviteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SMSPeer friendToInvite = new SMSPeer(friendNumber.getText().toString());
                 SMSInvitation invitation = new SMSInvitation(friendToInvite);
                 SMSSendInvitation sendInvitation = new SMSSendInvitation(invitation, SMSJoinableNetManager.getInstance());
                 sendInvitation.execute();
