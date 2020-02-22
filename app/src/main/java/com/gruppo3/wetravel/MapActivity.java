@@ -2,8 +2,10 @@ package com.gruppo3.wetravel;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
@@ -141,6 +143,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         });
 
         mapReady = true;
+
+        addMarker(new LatLng(45.603450,11.995468), "ciao", BitmapDescriptorFactory.HUE_AZURE, null);
     }
 
     /**
@@ -151,7 +155,18 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         return mapReady;
     }
 
-    public void addMarker(@NonNull LatLng latLng, @Nullable String title, float color, @Nullable Object o) {
+    /**
+     * Add a marker on the map.
+     * @param latLng Coordinates where to place the marker
+     * @param title String to show when user clicks on the marker (it's showed in a popup over the marker)
+     * @param color Color of the marker. Should be a float value between 0 and 360, representing points on a color wheel, or can be a BitmapDescriptorFactory predefined color
+     * @param o Generic object to be associated with the marker
+     * @throws RuntimeException if map has not been yet initialised.
+     */
+    public void addMarker(@NonNull LatLng latLng, @Nullable String title, float color, @Nullable Object o) throws RuntimeException {
+        if (!mapReady)
+            throw new RuntimeException("Map is not ready to work!");
+
         MarkerOptions markerOptions = new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.defaultMarker(color));
 
         if (title != null)

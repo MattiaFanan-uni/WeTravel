@@ -19,7 +19,7 @@ public class LauncherActivity extends AppCompatActivity {
     }
 
     /**
-     * Initialize UI elements that can't be set in activity_launcher.xml.
+     * Initialize UI elements that can't be set in layout xml.
      */
     private void initUI() {
         // Hiding system status bar
