@@ -133,6 +133,15 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             }
         });
 
+        // If user clicks on a marker, we stop following current location
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+                return false;
+            }
+        });
+
         // If user clicks on MyLocation button, we resume following current location
         mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
             @Override
@@ -144,7 +153,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
         mapReady = true;
 
-        addMarker(new LatLng(45.603450,11.995468), "ciao", BitmapDescriptorFactory.HUE_AZURE, null);
+        loadDestinationsOnMap();
     }
 
     /**
@@ -155,27 +164,32 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         return mapReady;
     }
 
+    private void loadDestinationsOnMap() {
+        // TODO: get destinations with kademlia
+        DestinationMarker[] destinationMarkers = new DestinationMarker[] {
+                new DestinationMarker(new LatLng(45.603450,11.995468), "Ritiro pacco Amazon", BitmapDescriptorFactory.HUE_AZURE),
+                new DestinationMarker(new LatLng(45.606016, 11.995734), "Ritiro posta")
+        };
+
+        for (DestinationMarker destinationMarker : destinationMarkers) {
+            addMarker(destinationMarker);
+        }
+    }
+
     /**
      * Add a marker on the map.
-     * @param latLng Coordinates where to place the marker
-     * @param title String to show when user clicks on the marker (it's showed in a popup over the marker)
-     * @param color Color of the marker. Should be a float value between 0 and 360, representing points on a color wheel, or can be a BitmapDescriptorFactory predefined color
-     * @param o Generic object to be associated with the marker
+     * @param destinationMarker Object of type DestinationMarker containing information about the marker to be added
      * @throws RuntimeException if map has not been yet initialised.
      */
-    public void addMarker(@NonNull LatLng latLng, @Nullable String title, float color, @Nullable Object o) throws RuntimeException {
+    public void addMarker(DestinationMarker destinationMarker) throws RuntimeException {
         if (!mapReady)
             throw new RuntimeException("Map is not ready to work!");
 
-        MarkerOptions markerOptions = new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.defaultMarker(color));
-
-        if (title != null)
-            markerOptions.title(title);
-
-        if (o != null)
-            mMap.addMarker(markerOptions).setTag(o);
-        else
-            mMap.addMarker(markerOptions);
+        mMap.addMarker(new MarkerOptions()
+                .position(destinationMarker.getLatLng())
+                .title(destinationMarker.getTitle())
+                .icon(BitmapDescriptorFactory.defaultMarker(destinationMarker.getColor()))
+        ).setTag(destinationMarker.getObject());
     }
 
     /**
