@@ -20,6 +20,7 @@ import java.util.Set;
 
 /**
  * DBDictionary add persistence to dictionaries used in {@link com.eis.smsnetwork.SMSJoinableNetManager}
+ *
  * @author Mattia Fanan
  */
 public class DBDictionary implements NetDictionary<String, String>, NetSubscriberList<SMSPeer> {
@@ -42,10 +43,10 @@ public class DBDictionary implements NetDictionary<String, String>, NetSubscribe
         SQLiteDatabase writableDB = helper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(DBDictionaryContract.ResourceEntity.COLUMN_ID, key);
-        values.put(DBDictionaryContract.ResourceEntity.COLUMN_VALUE, resource);
+        values.put(DBDictionaryStructure.ResourceEntity.COLUMN_ID, key);
+        values.put(DBDictionaryStructure.ResourceEntity.COLUMN_VALUE, resource);
 
-        writableDB.insert(DBDictionaryContract.ResourceEntity.TABLE_NAME, null, values);
+        writableDB.insert(DBDictionaryStructure.ResourceEntity.TABLE_NAME, null, values);
     }
 
     /**
@@ -58,11 +59,11 @@ public class DBDictionary implements NetDictionary<String, String>, NetSubscribe
         SQLiteDatabase writableDB = helper.getWritableDatabase();
 
         // Define 'where' part of query.
-        String selection = DBDictionaryContract.ResourceEntity.COLUMN_ID + " LIKE ?";
+        String selection = DBDictionaryStructure.ResourceEntity.COLUMN_ID + " LIKE ?";
         // Specify arguments in placeholder order.
         String[] selectionArgs = {key};
         // Issue SQL statement.
-        writableDB.delete(DBDictionaryContract.ResourceEntity.TABLE_NAME, selection, selectionArgs);
+        writableDB.delete(DBDictionaryStructure.ResourceEntity.TABLE_NAME, selection, selectionArgs);
     }
 
     /**
@@ -78,11 +79,11 @@ public class DBDictionary implements NetDictionary<String, String>, NetSubscribe
 
 
         // Filter results
-        String selection = DBDictionaryContract.ResourceEntity.COLUMN_ID + " LIKE ?";
+        String selection = DBDictionaryStructure.ResourceEntity.COLUMN_ID + " LIKE ?";
         String[] selectionArgs = {key};
 
         Cursor cursor = db.query(
-                DBDictionaryContract.ResourceEntity.TABLE_NAME,   // The table to query
+                DBDictionaryStructure.ResourceEntity.TABLE_NAME,   // The table to query
                 null,             // The array of columns to return (pass null to get all)
                 selection,              // The columns for the WHERE clause
                 selectionArgs,          // The values for the WHERE clause
@@ -92,7 +93,7 @@ public class DBDictionary implements NetDictionary<String, String>, NetSubscribe
         );
 
         if (cursor.moveToNext())
-            return cursor.getString(cursor.getColumnIndexOrThrow(DBDictionaryContract.ResourceEntity.COLUMN_VALUE));
+            return cursor.getString(cursor.getColumnIndexOrThrow(DBDictionaryStructure.ResourceEntity.COLUMN_VALUE));
 
         return null;
     }
@@ -107,9 +108,9 @@ public class DBDictionary implements NetDictionary<String, String>, NetSubscribe
         SQLiteDatabase writableDB = helper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(DBDictionaryContract.SubscriberEntity.COLUMN_PHONE_NUMBER, subscriber.getAddress());
+        values.put(DBDictionaryStructure.SubscriberEntity.COLUMN_PHONE_NUMBER, subscriber.getAddress());
 
-        writableDB.insert(DBDictionaryContract.SubscriberEntity.TABLE_NAME, null, values);
+        writableDB.insert(DBDictionaryStructure.SubscriberEntity.TABLE_NAME, null, values);
     }
 
     /**
@@ -118,7 +119,7 @@ public class DBDictionary implements NetDictionary<String, String>, NetSubscribe
     @Override
     public Set<SMSPeer> getSubscribers() {
         SQLiteDatabase db = helper.getReadableDatabase();
-        String query = "select * from " + DBDictionaryContract.SubscriberEntity.TABLE_NAME;
+        String query = "select * from " + DBDictionaryStructure.SubscriberEntity.TABLE_NAME;
 
         Cursor cursor = db.rawQuery(query, null);
 
@@ -126,7 +127,7 @@ public class DBDictionary implements NetDictionary<String, String>, NetSubscribe
 
         while (cursor.moveToNext()) {
             SMSPeer peer = new SMSPeer(
-                    cursor.getString(cursor.getColumnIndexOrThrow(DBDictionaryContract.SubscriberEntity.COLUMN_PHONE_NUMBER))
+                    cursor.getString(cursor.getColumnIndexOrThrow(DBDictionaryStructure.SubscriberEntity.COLUMN_PHONE_NUMBER))
             );
             subscribers.add(peer);
         }
@@ -147,40 +148,41 @@ public class DBDictionary implements NetDictionary<String, String>, NetSubscribe
         SQLiteDatabase writableDB = helper.getWritableDatabase();
 
         // Define 'where' part of query.
-        String selection = DBDictionaryContract.SubscriberEntity.COLUMN_PHONE_NUMBER + " LIKE ?";
+        String selection = DBDictionaryStructure.SubscriberEntity.COLUMN_PHONE_NUMBER + " LIKE ?";
         // Specify arguments in placeholder order.
         String[] selectionArgs = {subscriber.getAddress()};
         // Issue SQL statement.
-        writableDB.delete(DBDictionaryContract.SubscriberEntity.TABLE_NAME, selection, selectionArgs);
+        writableDB.delete(DBDictionaryStructure.SubscriberEntity.TABLE_NAME, selection, selectionArgs);
     }
 
     /**
      * Gets all partakes closer than radius from a given position
-     * @param position  the center of the area containing the partakes to return
-     * @param radius    the radius of the area containing the partakes to return
+     *
+     * @param position the center of the area containing the partakes to return
+     * @param radius   the radius of the area containing the partakes to return
      * @return all partakes closer than radius from a given position
      */
     public ArrayList<Partake> getClosestPartakes(LatLng position, Double radius) {
 
         ArrayList<Partake> toReturn = new ArrayList<>();
         SQLiteDatabase db = helper.getReadableDatabase();
-        String query = "select * from " + DBDictionaryContract.ResourceEntity.TABLE_NAME;
+        String query = "select * from " + DBDictionaryStructure.ResourceEntity.TABLE_NAME;
 
         Cursor cursor = db.rawQuery(query, null);
 
         while (cursor.moveToNext()) {
 
-            int resIndex = cursor.getColumnIndexOrThrow(DBDictionaryContract.ResourceEntity.COLUMN_VALUE);
-            int keyIndex = cursor.getColumnIndexOrThrow(DBDictionaryContract.ResourceEntity.COLUMN_ID);
+            int resIndex = cursor.getColumnIndexOrThrow(DBDictionaryStructure.ResourceEntity.COLUMN_VALUE);
+            int keyIndex = cursor.getColumnIndexOrThrow(DBDictionaryStructure.ResourceEntity.COLUMN_ID);
 
             LatLng partakePosition = convertStringToLatLng(cursor.getString(resIndex));
 
-            float[] result=new float[1];
-            Location.distanceBetween(position.latitude,position.longitude,partakePosition.latitude,partakePosition.longitude,result);
+            float[] result = new float[1];
+            Location.distanceBetween(position.latitude, position.longitude, partakePosition.latitude, partakePosition.longitude, result);
 
             if (result[0] <= radius) {
                 SMSPeer partakeOwner = new SMSPeer(cursor.getString(keyIndex));
-                toReturn.add(new Partake(partakeOwner, partakePosition));
+                toReturn.add(new Partake(partakeOwner.getAddress(), partakePosition));
             }
         }
 
@@ -189,6 +191,7 @@ public class DBDictionary implements NetDictionary<String, String>, NetSubscribe
 
     /**
      * Converts a LatLng to a String
+     *
      * @param latLng the position to convert
      * @return the string converted from the LatLng
      */
@@ -198,6 +201,7 @@ public class DBDictionary implements NetDictionary<String, String>, NetSubscribe
 
     /**
      * Converts a String to a LatLng
+     *
      * @param string the String to convert
      * @return the LatLng converted from the String
      */

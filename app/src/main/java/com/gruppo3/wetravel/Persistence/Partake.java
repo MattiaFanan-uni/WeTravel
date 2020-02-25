@@ -26,7 +26,8 @@ public class Partake {
     private LatLng position;
 
     public Partake(String phoneNumber, LatLng position){
-        this(new SMSPeer(phoneNumber),position);
+        this.owner = new SMSPeer(phoneNumber);
+        this.position = position;
     }
 
     public double meterDistance(LatLng position) {

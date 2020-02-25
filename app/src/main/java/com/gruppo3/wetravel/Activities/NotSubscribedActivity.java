@@ -14,17 +14,28 @@ import com.eis.smslibrary.SMSPeer;
 import com.eis.smsnetwork.SMSJoinableNetManager;
 import com.gruppo3.wetravel.R;
 
+/**
+ * This activity is opened when you run the app and you are not subscribed yet
+ * It allows you to send an invitation to a friend or to accept or decline an incoming invitation
+ *
+ * @author Riccardo Crociani
+ */
+
 public class NotSubscribedActivity extends AppCompatActivity implements JoinInvitationListener<Invitation<SMSPeer>> {
+
+    private static final String INVITED_YOU = "Invited you";
+    private static final String DO_YOU_WANT_TO_JOIN = "Do you want to join its network?";
+    private static final String ACCEPT = "Accept";
+    private static final String DECLINE = "Decline";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_not_subscribed);
-
     }
 
     /**
-     * change the activity to the one that manage the invitations
+     * It opens the activity that manages the invitations
      *
      * @param v Clicked view
      */
@@ -40,30 +51,29 @@ public class NotSubscribedActivity extends AppCompatActivity implements JoinInvi
      */
     @Override
     public void onJoinInvitationReceived(Invitation<SMSPeer> invitation) {
-        String inviterAddress = invitation.getInviterPeer().getAddress();
-
+        createDialog(invitation);
     }
 
     private void createDialog(final Invitation<SMSPeer> invitation) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+        AlertDialog.Builder dialog = new AlertDialog.Builder(getApplicationContext());
 
-        builder.setMessage(invitation.getInviterPeer().getAddress()+" ti ha invitato")
-                .setTitle("SEI STATO INVITATO AD UNIRTI AD UNA RETE")
-                .setPositiveButton("accept", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        replyInvitation(invitation);
-                    }
-                })
-                .setNegativeButton("decline", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();//TODO maybe this is redundant
-                    }
-                });
+        dialog.setMessage(invitation.getInviterPeer().getAddress() + INVITED_YOU);
+        dialog.setTitle(DO_YOU_WANT_TO_JOIN);
+        dialog.setPositiveButton(ACCEPT, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                replyInvitation(invitation);
+            }
+        });
+        dialog.setNegativeButton(DECLINE, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
 
-        AlertDialog dialog = builder.create();
+        dialog.create().show();
     }
 
-    private void replyInvitation(Invitation<SMSPeer> invitation){
+    private void replyInvitation(Invitation<SMSPeer> invitation) {
         SMSJoinableNetManager.getInstance().acceptJoinInvitation(invitation);
     }
 }

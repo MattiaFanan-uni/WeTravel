@@ -19,12 +19,15 @@ import com.gruppo3.wetravel.R;
 
 import java.util.ArrayList;
 
-
+/**
+ * Called when the user is not subscribed and He wants to invite a friend or accept an invitation
+ *
+ * @author Riccardo Crociani
+ */
 public class FriendsActivity extends AppCompatActivity {
 
     private EditText friendNumber;
     private Button inviteButton;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +35,7 @@ public class FriendsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_friends);
 
         /**
-         * Enter the number you want to send an invitation to
+         * friendNumber: the number the user wants to send a invitation to
          */
         friendNumber = findViewById(R.id.friendNumber);
         inviteButton = findViewById(R.id.inviteButton);
