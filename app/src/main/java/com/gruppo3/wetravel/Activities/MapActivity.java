@@ -1,20 +1,16 @@
-package com.gruppo3.wetravel;
+package com.gruppo3.wetravel.Activities;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -31,6 +27,8 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.gruppo3.wetravel.DestinationMarker;
+import com.gruppo3.wetravel.R;
 
 /**
  * This activity needs ACCESS_FINE_LOCATION (or ACCESS_COURSE_LOCATION) permission.<br>
@@ -67,6 +65,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     private GoogleMap mMap = null; // Main map obj reference
     private FusedLocationProviderClient fusedLocationProviderClient; // Needed for acquiring location updates
     private LocationRequest locationRequest; // Needed for requesting location updates
+
+    private Button friendsButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

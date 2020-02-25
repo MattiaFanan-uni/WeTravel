@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#efefef"
-    tools:context=".MapActivity">
+    tools:context=".Activities.MapActivity">
 
     <include layout="@layout/map_content" />
     <include layout="@layout/map_bottom_sheet" />
