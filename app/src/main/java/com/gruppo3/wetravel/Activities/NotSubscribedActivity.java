@@ -62,18 +62,18 @@ public class NotSubscribedActivity extends AppCompatActivity implements JoinInvi
     private void createDialog(final Invitation<SMSPeer> invitation) {
         AlertDialog.Builder dialog = new AlertDialog.Builder(getApplicationContext());
 
-        dialog.setMessage(invitation.getInviterPeer().getAddress() + INVITED_YOU);
-        dialog.setTitle(DO_YOU_WANT_TO_JOIN);
-        dialog.setPositiveButton(ACCEPT, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                replyInvitation(invitation);
-            }
-        });
-        dialog.setNegativeButton(DECLINE, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.cancel();
-            }
-        });
+        dialog.setMessage(invitation.getInviterPeer().getAddress() + INVITED_YOU)
+                .setTitle(DO_YOU_WANT_TO_JOIN)
+                .setPositiveButton(ACCEPT, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        replyInvitation(invitation);
+                    }
+                })
+                .setNegativeButton(DECLINE, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
 
         dialog.create().show();
     }
