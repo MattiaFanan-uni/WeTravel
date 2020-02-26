@@ -15,8 +15,8 @@ import com.eis.smsnetwork.SMSJoinableNetManager;
 import com.gruppo3.wetravel.R;
 
 /**
- * This activity is opened when you run the app and you are not subscribed yet
- * It allows you to send an invitation to a friend or to accept or decline an incoming invitation
+ * This activity is opened when the user runs the app and is not subscribed yet
+ * It allows the user to send an invitation to a friend or to accept or decline an incoming invitation
  *
  * @author Riccardo Crociani
  */
@@ -40,8 +40,8 @@ public class NotSubscribedActivity extends AppCompatActivity implements JoinInvi
      * @param v Clicked view
      */
     public void buttonInvite_onClick(View v) {
-        Intent intent = new Intent(this, FriendsActivity.class);
-        startActivity(intent);
+        Intent openFriendsActivityIntent = new Intent(this, FriendsActivity.class);
+        startActivity(openFriendsActivityIntent);
     }
 
     /**
@@ -54,6 +54,11 @@ public class NotSubscribedActivity extends AppCompatActivity implements JoinInvi
         createDialog(invitation);
     }
 
+    /**
+     * It is create a dialog to accept or decline the invitation received
+     *
+     * @param invitation The invitation Received
+     */
     private void createDialog(final Invitation<SMSPeer> invitation) {
         AlertDialog.Builder dialog = new AlertDialog.Builder(getApplicationContext());
 
@@ -73,6 +78,11 @@ public class NotSubscribedActivity extends AppCompatActivity implements JoinInvi
         dialog.create().show();
     }
 
+    /**
+     * Accept the invitation and join the network
+     *
+     * @param invitation The invitation received
+     */
     private void replyInvitation(Invitation<SMSPeer> invitation) {
         SMSJoinableNetManager.getInstance().acceptJoinInvitation(invitation);
     }

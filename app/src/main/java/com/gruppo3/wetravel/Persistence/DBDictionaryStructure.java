@@ -15,7 +15,7 @@ public final class DBDictionaryStructure {
     private static final String IDENTIFIER = "identifier";
     private static final String VALUE = "value";
 
-    // To prevent someone from accidentally instantiating the contract class,
+    // To prevent someone from accidentally instantiating the structure class,
     // make the constructor private.
     private DBDictionaryStructure() {
     }
@@ -35,7 +35,7 @@ public final class DBDictionaryStructure {
     static class ResourceEntity implements BaseColumns {
         static final String TABLE_NAME = RESOURCES;
 
-        static final String COLUMN_ID = IDENTIFIER;//don't use key cause is reserved in sql
+        static final String COLUMN_ID = IDENTIFIER;
         static final String COLUMN_VALUE = VALUE;
     }
 }

@@ -12,7 +12,7 @@ import com.gruppo3.wetravel.R;
 
 /**
  * If the user is already subscribed it will be opened the  MapActivty,
- * else it will be opened the activity which allows to invite or get invited to a network
+ * else it will be opened the activity which allows to invite or get invited to a network.
  * DBDictionary adds persistence to dictionaries
  * DBDictionaryHelper manages the operations on the DB
  *
@@ -45,10 +45,9 @@ public class LauncherActivity extends AppCompatActivity {
     }
 
     /**
-     *
      * @return boolean True if the user is subscribed to a network
      */
-    private boolean isSubscribed(){
+    private boolean isSubscribed() {
         return SMSJoinableNetManager.getInstance().getNetSubscriberList().getSubscribers().size() > 1;
     }
 }

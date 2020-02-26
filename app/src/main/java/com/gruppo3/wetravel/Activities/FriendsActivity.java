@@ -35,7 +35,7 @@ public class FriendsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_friends);
 
         /**
-         * friendNumber: the number the user wants to send a invitation to
+         * friendNumber: the number the user wants to send an invitation to
          */
         friendNumber = findViewById(R.id.friendNumber);
         inviteButton = findViewById(R.id.inviteButton);
