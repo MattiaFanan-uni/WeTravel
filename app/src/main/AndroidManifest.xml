@@ -16,21 +16,28 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".Activities.NotSubscribedActivity"
+            android:label="@string/title_activity_not_subscribed"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".Activities.LauncherActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".Activities.FriendsActivity" />
+        <activity
             android:name=".Activities.Home"
             android:label="@string/title_activity_home"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <service
             android:name=".InvitationService"
             android:enabled="true"
             android:exported="true" />
 
-        <activity
-            android:name=".Activities.NotSubscribedActivity"
-            android:label="@string/title_activity_not_subscribed"
-            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".Activities.invActivity" />
-        <activity android:name=".Activities.FriendsActivity" />
         <activity
             android:name=".Invitation.Friends"
             android:label="@string/title_activity_friends"
@@ -48,13 +55,6 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".Activities.LauncherActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
         <activity
             android:name=".Activities.MapActivity"
             android:label="@string/title_activity_maps" />
