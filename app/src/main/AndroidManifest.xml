@@ -15,20 +15,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <service
-            android:name=".InvitationService"
-            android:enabled="true"
-            android:exported="true" />
-
-        <meta-data
-            android:name="preloaded_fonts"
-            android:resource="@array/preloaded_fonts" />
-
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
-
+        <activity
+            android:name=".Activities.NotSubscribedActivity"
+            android:label="@string/title_activity_not_subscribed"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity android:name=".Activities.LauncherActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,31 +26,38 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity android:name=".Activities.FriendsActivity" />
         <activity
-            android:name=".Activities.MapActivity"
-            android:label="@string/title_activity_maps" />
-
-        <activity
-            android:name=".Activities.NotSubscribedActivity"
-            android:label="@string/title_activity_not_subscribed"
+            android:name=".Activities.Home"
+            android:label="@string/title_activity_home"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <activity android:name=".Activities.SignUpActivity" />
-
-        <activity
-            android:name=".Invitation.Invitation"
-            android:label="@string/title_activity_invitations"
-            android:theme="@style/AppTheme.NoActionBar" />
+        <service
+            android:name=".InvitationService"
+            android:enabled="true"
+            android:exported="true" />
 
         <activity android:name=".Activities.invActivity" />
-
-        <activity android:name=".Activities.FriendsActivity" />
-
         <activity
             android:name=".Invitation.Friends"
             android:label="@string/title_activity_friends"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Invitation.Invitation"
+            android:label="@string/title_activity_invitations"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".Activities.SignUpActivity" />
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+
+        <activity
+            android:name=".Activities.MapActivity"
+            android:label="@string/title_activity_maps" />
     </application>
 
 </manifest>

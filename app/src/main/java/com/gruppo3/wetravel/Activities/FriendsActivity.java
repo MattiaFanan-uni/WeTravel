@@ -6,34 +6,31 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 
-import com.eis.communication.network.Invitation;
 import com.eis.smsnetwork.SMSJoinableNetManager;
 import com.eis.smslibrary.SMSPeer;
-import com.gruppo3.wetravel.Invitation.RequestType;
 import com.gruppo3.wetravel.Invitation.SMSInvitation;
 import com.gruppo3.wetravel.Invitation.SMSSendInvitation;
-import com.gruppo3.wetravel.BroadcastReceivers.MessageListener;
 import com.gruppo3.wetravel.R;
 
-import java.util.ArrayList;
 
-
+/**
+ * Called when the user is not subscribed and He wants to invite a friend or accept an invitation
+ *
+ * @author Riccardo Crociani
+ */
 public class FriendsActivity extends AppCompatActivity {
 
     private EditText friendNumber;
     private Button inviteButton;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friends);
 
-        /**
-         * Enter the number you want to send an invitation to
-         */
+
+        // friendNumber: the number the user wants to send an invitation to
         friendNumber = findViewById(R.id.friendNumber);
         inviteButton = findViewById(R.id.inviteButton);
         inviteButton.setOnClickListener(new View.OnClickListener() {

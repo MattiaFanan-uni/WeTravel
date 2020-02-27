@@ -8,6 +8,16 @@ import com.google.android.gms.maps.model.LatLng;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+package com.gruppo3.wetravel.Persistence;
+
+import android.location.Location;
+
+import com.eis.smslibrary.SMSPeer;
+import com.google.android.gms.maps.model.LatLng;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.Setter;
@@ -26,7 +36,8 @@ public class Partake {
     private LatLng position;
 
     public Partake(String phoneNumber, LatLng position){
-        this(new SMSPeer(phoneNumber), position);
+        this.owner = new SMSPeer(phoneNumber);
+        this.position = position;
     }
 
     public double meterDistance(LatLng position) {
