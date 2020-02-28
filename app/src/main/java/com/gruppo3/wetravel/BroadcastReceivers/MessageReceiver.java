@@ -8,13 +8,13 @@ import android.os.Bundle;
 import android.telephony.SmsMessage;
 
 import com.eis.smslibrary.SMSPeer;
+import com.eis.smsnetwork.RequestType;
 
 import java.util.ArrayList;
 
 public class MessageReceiver extends BroadcastReceiver {
 
     private static ArrayList<MessageListener> listeners;
-
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -38,17 +38,16 @@ public class MessageReceiver extends BroadcastReceiver {
             String number = smsMessage.getOriginatingAddress();
             SMSPeer peerNumber = new SMSPeer(number);
 
+
             if(listeners !=null)
                 for(MessageListener listener: listeners)
                     listener.messageReceived(message, peerNumber);
         }
-
-
     }
 
     public static void bindListener(MessageListener listener) {
-        if(listeners ==null)
-            listeners =new ArrayList<>();
+        if(listeners == null)
+            listeners = new ArrayList<>();
         listeners.add(listener);
     }
 }

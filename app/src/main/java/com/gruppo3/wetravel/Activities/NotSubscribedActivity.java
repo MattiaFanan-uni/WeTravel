@@ -12,6 +12,7 @@ import com.eis.communication.network.Invitation;
 import com.eis.communication.network.listeners.JoinInvitationListener;
 import com.eis.smslibrary.SMSPeer;
 import com.eis.smsnetwork.SMSJoinableNetManager;
+import com.gruppo3.wetravel.BroadcastReceivers.MessageReceiver;
 import com.gruppo3.wetravel.R;
 
 /**
@@ -51,6 +52,7 @@ public class NotSubscribedActivity extends AppCompatActivity implements JoinInvi
      */
     @Override
     public void onJoinInvitationReceived(Invitation<SMSPeer> invitation) {
+
         createDialog(invitation);
     }
 
