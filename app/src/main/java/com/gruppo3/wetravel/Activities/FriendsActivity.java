@@ -7,10 +7,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.eis.smsnetwork.SMSInvitation;
 import com.eis.smsnetwork.SMSJoinableNetManager;
 import com.eis.smslibrary.SMSPeer;
-import com.gruppo3.wetravel.Invitation.SMSInvitation;
-import com.gruppo3.wetravel.Invitation.SMSSendInvitation;
+
+import com.eis.smsnetwork.smsnetcommands.SMSSendInvitation;
 import com.gruppo3.wetravel.R;
 
 

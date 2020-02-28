@@ -8,7 +8,7 @@ import com.google.android.gms.maps.model.LatLng;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-package com.gruppo3.wetravel.Persistence;
+
 
 import android.location.Location;
 
@@ -40,7 +40,7 @@ public class Partake {
         this.position = position;
     }
 
-    public double meterDistance(LatLng position) {
+  /*  public double meterDistance(LatLng position) {
 
         float[] results = new float[1];
         //if result.length =1 distanceBetween return the distance
@@ -52,5 +52,5 @@ public class Partake {
 
     public double meterDistance(Partake partake) {
         return meterDistance(partake.getPosition());
-    }
+    }*/
 }
