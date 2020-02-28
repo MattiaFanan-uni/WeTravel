@@ -6,11 +6,12 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
-import android.widget.Button;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -27,13 +28,20 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.gruppo3.wetravel.DestinationMarker;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.gruppo3.wetravel.Types.DestinationMarker;
 import com.gruppo3.wetravel.R;
+import com.gruppo3.wetravel.Types.DownloadTask;
+import com.gruppo3.wetravel.Types.ParserTask;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * This activity needs ACCESS_FINE_LOCATION (or ACCESS_COURSE_LOCATION) permission.<br>
  * Because of using FusedLocationProviderClient, it needs Google Play Services installed too.<br>
- * No checks for this condition are made because are already done by Google Maps fragment.<br>
+ * No checks are made for this condition because they're already done by Google Maps fragment.<br>
  * When Google Play Services are ready to work, {@link #onMapReady(GoogleMap) onMapReady} is called and the activity can start doing its job.
  * Can be set a custom location request interval using Intent extras (see Constant Field values)
  */
@@ -60,19 +68,32 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     private int locationRequestFastestInterval = 1000; // If a location is available sooner than locationRequestInterval, than this is the minimum rate this app will acquire this location update
     private int mapZoom = 17; // Map zoom level. 17 is about the same zoom level used by Google Maps
 
-    private boolean mapReady = false; // Boolean value that indicates whether or not the map is ready to work
-
     private GoogleMap mMap = null; // Main map obj reference
     private FusedLocationProviderClient fusedLocationProviderClient; // Needed for acquiring location updates
     private LocationRequest locationRequest; // Needed for requesting location updates
-
-    private Button friendsButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        init();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // Stop location updates when this activity is no longer active
+        if (fusedLocationProviderClient != null)
+            fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+    }
+
+    /**
+     * Gets map parameters (if given), initialize the map fragment and the location service.
+     */
+    private void init() {
+        // Getting extras for map configuration
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             // Map zoom level
@@ -98,31 +119,61 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
+    /**
+     * Checks if needed permissions by this activity are granted and eventually asks them.
+     * If permissions are granted then request location updates and enable MyLocation layer.
+     * @see <a href="https://developer.android.com/guide/topics/permissions/overview">Permissions overview</a>
+     */
+    private void checkPermissions() {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                // Permissions already granted
+                enableMyLocationAndLocationUpdates();
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, ACCESS_FINE_LOCATION_REQUEST_CODE);
+            }
+        }
+        else {
+            enableMyLocationAndLocationUpdates();
+        }
+    }
 
-        // Stop location updates when this activity is no longer active
-        if (fusedLocationProviderClient != null)
-            fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+    /**
+     * @see <a href="https://developer.android.com/guide/topics/permissions/overview">Permissions overview</a>
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case ACCESS_FINE_LOCATION_REQUEST_CODE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Checking again permission to avoid runtime exceptions
+                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        enableMyLocationAndLocationUpdates();
+                    }
+                } else {
+                    // Permission denied
+                    // Functionalities depending by this permission will no longer work
+                    Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show();
+                }
+        }
     }
 
     /**
      * This callback is triggered when the map is ready to be used.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
+     * If Google Play services are not installed on the device, the user will be prompted to install
+     * them inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        checkPermissions(); // Checks (and eventually asks for) permissions needed by this activity
+
         locationRequest = new LocationRequest();
         locationRequest.setInterval(locationRequestInterval);
         locationRequest.setFastestInterval(locationRequestFastestInterval);
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY); // This parameter affects battery consumption and location accuracy
-
-        checkPermissions(); // Checks (and eventually asks for) permissions needed by this activity
 
         // If user moves the map, we stop following current location
         mMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
@@ -150,103 +201,117 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                 return false;
             }
         });
-
-        mapReady = true;
-
-        loadDestinationsOnMap();
     }
 
     /**
-     * Checks if main map on this activity is ready to accomplish operations.
-     * @return Boolean value indicating if the map is ready to accomplish operations or not
+     * Requests location updates and enables MyLocation (blue dot on the map).
+     * @throws RuntimeException if no FusedLocationProviderClient is registered nor a map is initialized
      */
-    public boolean isMapReady() {
-        return mapReady;
-    }
+    private void enableMyLocationAndLocationUpdates() throws RuntimeException {
+        // Enabling location updates
+        if (fusedLocationProviderClient != null)
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
+        else
+            throw new RuntimeException("Can't request location updates. FusedLocationProviderClient is set to null.");
 
-    private void loadDestinationsOnMap() {
-        // TODO: get destinations with kademlia
-        DestinationMarker[] destinationMarkers = new DestinationMarker[] {
-                new DestinationMarker(new LatLng(45.603450,11.995468), "Ritiro pacco Amazon", BitmapDescriptorFactory.HUE_AZURE),
-                new DestinationMarker(new LatLng(45.606016, 11.995734), "Ritiro posta")
-        };
+        // Enabling "MyLocation" function
+        if (mMap != null)
+            mMap.setMyLocationEnabled(true);
+        else
+            throw new RuntimeException("Can't enable MyLocation. Map is set to null.");
 
-        for (DestinationMarker destinationMarker : destinationMarkers) {
-            addMarker(destinationMarker);
-        }
+        computeRoute(new LatLng(45.603826, 11.995471), new LatLng(45.609519, 12.014606));
     }
 
     /**
-     * Add a marker on the map.
-     * @param destinationMarker Object of type DestinationMarker containing information about the marker to be added
+     * Computes and shows on the map the requested route from origin to destination.
+     * @param origin Route's origin coordinates
+     * @param dest Route's destination coordinates
+     */
+    private void computeRoute(LatLng origin, LatLng dest) {
+        String googleDirectionsApiUrl = buildDirectionsUrl(origin, dest); // Builds the Google Maps Directions API request url
+
+        // Downloads the JSON from Google Maps Directions Web Service and returns the result to asyncResponse(String) callback
+        new DownloadTask(new DownloadTask.AsyncResponse() {
+            @Override
+            public void onFinishResult(String result) {
+                Log.e("Attenzione", "DownloadTask()");
+                new ParserTask(new ParserTask.AsyncResponse() {
+                    @Override
+                    public void onFinishResult(List<List<HashMap<String, String>>> result) {
+                        Log.e("Attenzione", "ParserTask()");
+                        showRouteFromParsedJSON(result);
+                    }
+                }).execute(result);
+            }
+        }).execute(googleDirectionsApiUrl);
+    }
+
+    private void showRouteFromParsedJSON(List<List<HashMap<String, String>>> result) {
+        ArrayList points = null;
+        PolylineOptions lineOptions = null;
+        MarkerOptions markerOptions = new MarkerOptions();
+
+        for (int i = 0; i < result.size(); i++) {
+            points = new ArrayList();
+            lineOptions = new PolylineOptions();
+
+            List<HashMap<String, String>> path = result.get(i);
+
+            for (int j = 0; j < path.size(); j++) {
+                HashMap<String, String> point = path.get(j);
+
+                double lat = Double.parseDouble(point.get("lat"));
+                double lng = Double.parseDouble(point.get("lng"));
+                LatLng position = new LatLng(lat, lng);
+
+                points.add(position);
+            }
+
+            lineOptions.addAll(points);
+            lineOptions.width(12);
+            lineOptions.color(Color.RED);
+            lineOptions.geodesic(true);
+
+        }
+
+        // Drawing polyline in the Google Map for the i-th route
+        mMap.addPolyline(lineOptions);
+    }
+
+    /**
+     * Builds an url with parameters for requesting route to Google Maps Directions API from origin to destination.
+     * @param origin Route's origin coordinates
+     * @param dest Route's destination coordinates
+     * @return A string containing the url to the Google Maps Directions API for requesting the route from origin to dest
+     */
+    private String buildDirectionsUrl(LatLng origin, LatLng dest) {
+        String parameters = "";
+        parameters += "origin=" + origin.latitude + "," + origin.longitude; // Route origin
+        parameters += "&" + "destination=" + dest.latitude + "," + dest.longitude; // Destination of route
+        parameters += "&" + "sensor=false"; // Sensor disabled
+        parameters += "&" + "mode=driving"; // Mode driving. Other modes are: walking, bicyling, transit.
+
+        String key = "AIzaSyBAqE4yh01-eD6Tv2nQ7lxIMsFik807yIY"; // TODO: Modify key when apk is released
+
+        // Returning the url to the web service
+        return "https://maps.googleapis.com/maps/api/directions/json?" + parameters + "&key=" + key;
+    }
+
+    /**
+     * Add a marker on the map with the parameters included in the given DestinationMarker.
+     * @param destinationMarker DestinationMarker object containing information about the marker to be added
      * @throws RuntimeException if map has not been yet initialised.
      */
     public void addMarker(DestinationMarker destinationMarker) throws RuntimeException {
-        if (!mapReady)
-            throw new RuntimeException("Map is not ready to work!");
+        if (mMap != null)
+            throw new RuntimeException("Can't add markers. Map is null.");
 
         mMap.addMarker(new MarkerOptions()
                 .position(destinationMarker.getLatLng())
                 .title(destinationMarker.getTitle())
                 .icon(BitmapDescriptorFactory.defaultMarker(destinationMarker.getColor()))
         ).setTag(destinationMarker.getObject());
-    }
-
-    /**
-     * @see <a href="https://developer.android.com/guide/topics/permissions/overview">Permissions overview</a>
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case ACCESS_FINE_LOCATION_REQUEST_CODE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Checking again permission to avoid runtime exceptions
-                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                        // Enabling "MyLocation" function and location updates
-                        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
-                        mMap.setMyLocationEnabled(true);
-                    }
-                } else {
-                    // Permission denied
-                    // Functionalities depending by this permission will no longer work
-                    Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show();
-                }
-        }
-    }
-
-    /**
-     * Checks if needed permissions by this activity are granted and eventually asks them.
-     * If permissions are granted then request location updates and enable MyLocation layer.
-     * If permissions are denied then disables these functionalities.
-     * @see <a href="https://developer.android.com/guide/topics/permissions/overview">Permissions overview</a>
-     */
-    private void checkPermissions() {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                // Location permission already granted
-                // Enabling "MyLocation" function and location updates
-                fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
-                mMap.setMyLocationEnabled(true);
-            } else {
-                // Request Location permission
-                requestPermission();
-            }
-        }
-        else {
-            // Enabling "MyLocation" function and location updates
-            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
-            mMap.setMyLocationEnabled(true);
-        }
-    }
-
-    /**
-     * Asks for permissions needed by this activity.
-     * @see <a href="https://developer.android.com/guide/topics/permissions/overview">Permissions overview</a>
-     */
-    private void requestPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, ACCESS_FINE_LOCATION_REQUEST_CODE);
-        }
     }
 
     /**
@@ -265,4 +330,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }
     };
+
+
 }

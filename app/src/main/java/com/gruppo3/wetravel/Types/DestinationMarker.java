@@ -1,4 +1,4 @@
-package com.gruppo3.wetravel;
+package com.gruppo3.wetravel.Types;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -55,10 +55,12 @@ public class DestinationMarker {
         this.object = o;
     }
 
+    @NonNull
     public LatLng getLatLng() {
         return latLng;
     }
 
+    @NonNull
     public String getTitle() {
         return title;
     }
@@ -67,6 +69,7 @@ public class DestinationMarker {
         return color;
     }
 
+    @Nullable
     public Object getObject() {
         return object;
     }

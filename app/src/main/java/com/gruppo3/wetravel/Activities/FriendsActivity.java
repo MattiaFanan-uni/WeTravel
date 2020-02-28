@@ -7,11 +7,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.eis.smsnetwork.SMSInvitation;
-import com.eis.smsnetwork.SMSJoinableNetManager;
 import com.eis.smslibrary.SMSPeer;
 
-import com.eis.smsnetwork.smsnetcommands.SMSSendInvitation;
+import com.eis.smsnetwork.smsnetcommands.SMSInvitePeer;
 import com.gruppo3.wetravel.R;
 
 
@@ -38,9 +36,10 @@ public class FriendsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 SMSPeer friendToInvite = new SMSPeer(friendNumber.getText().toString());
-                SMSInvitation invitation = new SMSInvitation(friendToInvite);
-                SMSSendInvitation sendInvitation = new SMSSendInvitation(invitation, SMSJoinableNetManager.getInstance());
-                sendInvitation.execute();
+                customSMSInvitePeer invitePeer = new customSMSInvitePeer(friendToInvite);
+                invitePeer.execute();
+
+
             }
         });
     }
