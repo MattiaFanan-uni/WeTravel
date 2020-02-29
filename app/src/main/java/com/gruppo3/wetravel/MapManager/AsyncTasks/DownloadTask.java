@@ -1,4 +1,4 @@
-package com.gruppo3.wetravel.Types;
+package com.gruppo3.wetravel.MapManager.AsyncTasks;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -17,11 +17,16 @@ import java.net.URL;
  */
 public class DownloadTask extends AsyncTask<String, String, String> {
 
+    public static final String errorMessage = "error";
+
+    /**
+     * Nested interface to accomplish post-download operations from calling class
+     */
     public interface AsyncResponse {
         void onFinishResult(String result);
     }
 
-    private AsyncResponse delegate = null;
+    private AsyncResponse delegate = null; // Method to be invoked when doInBackground is terminated
 
     public DownloadTask(AsyncResponse delegate) {
         this.delegate = delegate;
@@ -29,19 +34,21 @@ public class DownloadTask extends AsyncTask<String, String, String> {
 
     @Override
     protected String doInBackground(String... url) {
-        String data = "";
+        String data;
 
         try {
-            data = downloadUrl(url[0]);
+            data = downloadUrl(url[0]); // Download data from the given url
         } catch (IOException e) {
             Log.e("DownloadTask", Log.getStackTraceString(e));
+            data = errorMessage; // Returns an error message if something went wrong
         }
+
         return data;
     }
 
     @Override
     protected void onPostExecute(String result) {
-        delegate.onFinishResult(result);
+        delegate.onFinishResult(result); // Sends result to the delegate method
     }
 
     /**
@@ -74,6 +81,7 @@ public class DownloadTask extends AsyncTask<String, String, String> {
             br.close();
         } catch (Exception e) {
             Log.e("downloadUrl", Log.getStackTraceString(e));
+            data = errorMessage;
         } finally {
             if (iStream != null)
                 iStream.close();

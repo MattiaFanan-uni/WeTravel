@@ -1,17 +1,21 @@
-package com.gruppo3.wetravel.Types;
+package com.gruppo3.wetravel.MapManager;
 
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * This class is written by anupamchugh on 27/11/15.
+ * Downloaded from https://www.journaldev.com/13373/android-google-map-drawing-route-two-points
+ * All credits for this class go to the owner of this class.
+ */
 public class DirectionsJSONParser {
 
     /** Receives a JSONObject and returns a list of lists containing latitude and longitude */

@@ -6,12 +6,10 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -28,58 +26,60 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
-import com.gruppo3.wetravel.Types.DestinationMarker;
+import com.gruppo3.wetravel.MapManager.Types.DestinationMarker;
+import com.gruppo3.wetravel.MapManager.DirectionsManager;
+import com.gruppo3.wetravel.MapManager.ViewMap;
 import com.gruppo3.wetravel.R;
-import com.gruppo3.wetravel.Types.DownloadTask;
-import com.gruppo3.wetravel.Types.ParserTask;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 /**
+ * This activity shows a map with device current position and markers for available "missions".<br>
+ *
  * This activity needs ACCESS_FINE_LOCATION (or ACCESS_COURSE_LOCATION) permission.<br>
  * Because of using FusedLocationProviderClient, it needs Google Play Services installed too.<br>
  * No checks are made for this condition because they're already done by Google Maps fragment.<br>
  * When Google Play Services are ready to work, {@link #onMapReady(GoogleMap) onMapReady} is called and the activity can start doing its job.
  * Can be set a custom location request interval using Intent extras (see Constant Field values)
+ *
+ * @author Giovanni Barca
  */
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback {
 
-    /**
-     * Tag for sending map zoom level via Intent extras.
-     */
-    public static final String MAP_ZOOM_TAG = "mapZoom";
-
-    /**
-     * Tag for sending location request interval via Intent extras.
-     */
-    public static final String LOCATION_REQUEST_INTERVAL_TAG = "lrInterval";
-
-    /**
-     * Tag for sending location request fastest interval via Intent extras.
-     */
-    public static final String LOCATION_REQUEST_FASTEST_INTERVAL_TAG = "lrFastestInterval";
-
     private final int ACCESS_FINE_LOCATION_REQUEST_CODE = 1; // Request code for ACCESS_FINE_LOCATION permission
 
-    private int locationRequestInterval = 10000; // How much time (in ms) passes between two location requests. This parameter affects device battery consumption
-    private int locationRequestFastestInterval = 1000; // If a location is available sooner than locationRequestInterval, than this is the minimum rate this app will acquire this location update
-    private int mapZoom = 17; // Map zoom level. 17 is about the same zoom level used by Google Maps
-
     private GoogleMap mMap = null; // Main map obj reference
+    private ViewMap viewMap; // Class with map display and manipulation operations
+
     private FusedLocationProviderClient fusedLocationProviderClient; // Needed for acquiring location updates
     private LocationRequest locationRequest; // Needed for requesting location updates
+
+    public MapActivity() {
+        this(new ViewMap());
+    }
+
+    /**
+     * Instantiate a new object of type MapActivity with a ViewMap object containing needed methods.
+     * @param viewMap Object of type ViewMap containing needed method to accomplish operations on the map
+     */
+    public MapActivity(ViewMap viewMap) {
+        this.viewMap = viewMap;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        init();
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        // Gets the Location Provider Client for requesting location updates to
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
+    /**
+     * When this activity isn't displayed, suspends location updates to preserve battery and avoid useless operations.
+     */
     @Override
     protected void onPause() {
         super.onPause();
@@ -87,36 +87,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         // Stop location updates when this activity is no longer active
         if (fusedLocationProviderClient != null)
             fusedLocationProviderClient.removeLocationUpdates(locationCallback);
-    }
-
-    /**
-     * Gets map parameters (if given), initialize the map fragment and the location service.
-     */
-    private void init() {
-        // Getting extras for map configuration
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            // Map zoom level
-            // See also: https://developers.google.com/android/reference/com/google/android/gms/maps/model/CameraPosition.Builder.html#zoom(float)
-            if (extras.containsKey(MAP_ZOOM_TAG))
-                mapZoom = extras.getInt(MAP_ZOOM_TAG);
-
-            // locationRequestInterval
-            // See also: https://developers.google.com/android/reference/com/google/android/gms/location/LocationRequest.html#setInterval(long)
-            if (extras.containsKey(LOCATION_REQUEST_INTERVAL_TAG))
-                locationRequestInterval = extras.getInt(LOCATION_REQUEST_INTERVAL_TAG);
-
-            // locationRequestFastestInterval
-            // See also: https://developers.google.com/android/reference/com/google/android/gms/location/LocationRequest.html#setFastestInterval(long)
-            if (extras.containsKey(LOCATION_REQUEST_FASTEST_INTERVAL_TAG))
-                locationRequestFastestInterval = extras.getInt(LOCATION_REQUEST_FASTEST_INTERVAL_TAG);
-        }
-
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
     /**
@@ -168,12 +138,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        checkPermissions(); // Checks (and eventually asks for) permissions needed by this activity
+        // Checks (and eventually asks for) permissions needed by this activity
+        checkPermissions();
 
-        locationRequest = new LocationRequest();
-        locationRequest.setInterval(locationRequestInterval);
-        locationRequest.setFastestInterval(locationRequestFastestInterval);
-        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY); // This parameter affects battery consumption and location accuracy
+        // Gets ViewMap LocationRequest
+        locationRequest = viewMap.getLocationRequest();
 
         // If user moves the map, we stop following current location
         mMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
@@ -215,87 +184,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             throw new RuntimeException("Can't request location updates. FusedLocationProviderClient is set to null.");
 
         // Enabling "MyLocation" function
-        if (mMap != null)
+        if (mMap != null) {
             mMap.setMyLocationEnabled(true);
+        }
         else
             throw new RuntimeException("Can't enable MyLocation. Map is set to null.");
-
-        computeRoute(new LatLng(45.603826, 11.995471), new LatLng(45.609519, 12.014606));
-    }
-
-    /**
-     * Computes and shows on the map the requested route from origin to destination.
-     * @param origin Route's origin coordinates
-     * @param dest Route's destination coordinates
-     */
-    private void computeRoute(LatLng origin, LatLng dest) {
-        String googleDirectionsApiUrl = buildDirectionsUrl(origin, dest); // Builds the Google Maps Directions API request url
-
-        // Downloads the JSON from Google Maps Directions Web Service and returns the result to asyncResponse(String) callback
-        new DownloadTask(new DownloadTask.AsyncResponse() {
-            @Override
-            public void onFinishResult(String result) {
-                Log.e("Attenzione", "DownloadTask()");
-                new ParserTask(new ParserTask.AsyncResponse() {
-                    @Override
-                    public void onFinishResult(List<List<HashMap<String, String>>> result) {
-                        Log.e("Attenzione", "ParserTask()");
-                        showRouteFromParsedJSON(result);
-                    }
-                }).execute(result);
-            }
-        }).execute(googleDirectionsApiUrl);
-    }
-
-    private void showRouteFromParsedJSON(List<List<HashMap<String, String>>> result) {
-        ArrayList points = null;
-        PolylineOptions lineOptions = null;
-        MarkerOptions markerOptions = new MarkerOptions();
-
-        for (int i = 0; i < result.size(); i++) {
-            points = new ArrayList();
-            lineOptions = new PolylineOptions();
-
-            List<HashMap<String, String>> path = result.get(i);
-
-            for (int j = 0; j < path.size(); j++) {
-                HashMap<String, String> point = path.get(j);
-
-                double lat = Double.parseDouble(point.get("lat"));
-                double lng = Double.parseDouble(point.get("lng"));
-                LatLng position = new LatLng(lat, lng);
-
-                points.add(position);
-            }
-
-            lineOptions.addAll(points);
-            lineOptions.width(12);
-            lineOptions.color(Color.RED);
-            lineOptions.geodesic(true);
-
-        }
-
-        // Drawing polyline in the Google Map for the i-th route
-        mMap.addPolyline(lineOptions);
-    }
-
-    /**
-     * Builds an url with parameters for requesting route to Google Maps Directions API from origin to destination.
-     * @param origin Route's origin coordinates
-     * @param dest Route's destination coordinates
-     * @return A string containing the url to the Google Maps Directions API for requesting the route from origin to dest
-     */
-    private String buildDirectionsUrl(LatLng origin, LatLng dest) {
-        String parameters = "";
-        parameters += "origin=" + origin.latitude + "," + origin.longitude; // Route origin
-        parameters += "&" + "destination=" + dest.latitude + "," + dest.longitude; // Destination of route
-        parameters += "&" + "sensor=false"; // Sensor disabled
-        parameters += "&" + "mode=driving"; // Mode driving. Other modes are: walking, bicyling, transit.
-
-        String key = "AIzaSyBAqE4yh01-eD6Tv2nQ7lxIMsFik807yIY"; // TODO: Modify key when apk is released
-
-        // Returning the url to the web service
-        return "https://maps.googleapis.com/maps/api/directions/json?" + parameters + "&key=" + key;
     }
 
     /**
@@ -315,6 +208,19 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     }
 
     /**
+     * Shows the shortest route from origin to dest.
+     * @param origin Object of type LatLng referring to the route's origin coordinates
+     * @param dest Object of type LatLng referring to the route's destination coordinates
+     * @throws RuntimeException if map has not been yet initialised.
+     */
+    public void showRoute(LatLng origin, LatLng dest) throws RuntimeException {
+        if (mMap != null)
+            throw new RuntimeException("Can't show route. Map is null.");
+
+        DirectionsManager.getInstance().computeRoute(mMap, origin, dest);
+    }
+
+    /**
      * This callback is triggered when a new location update is received.<br>
      * It centers the camera to the last location received with an app-defined zoom constant.
      */
@@ -323,7 +229,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         public void onLocationResult(LocationResult locationResult) {
             Location location = locationResult.getLastLocation();
             CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .zoom(mapZoom)
+                    .zoom(viewMap.getMapZoom())
                     .target(new LatLng(location.getLatitude(), location.getLongitude()))
                     .build();
 

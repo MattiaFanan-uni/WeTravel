@@ -1,10 +1,15 @@
-package com.gruppo3.wetravel.Types;
+package com.gruppo3.wetravel.MapManager.Types;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.gms.maps.model.LatLng;
 
+/**
+ * DestinationMarker object containing the information on a map-displayable marker.
+ *
+ * @author Giovanni Barca
+ */
 public class DestinationMarker {
     private LatLng latLng = null;
     private String title = null;
