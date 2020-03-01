@@ -1,4 +1,4 @@
-package com.gruppo3.wetravel.Activities;
+package com.gruppo3.wetravel.activities;
 
 import android.util.Log;
 

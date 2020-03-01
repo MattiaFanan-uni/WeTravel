@@ -1,4 +1,4 @@
-package com.gruppo3.wetravel.Activities;
+package com.gruppo3.wetravel.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,8 +6,8 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.eis.smsnetwork.SMSJoinableNetManager;
-import com.gruppo3.wetravel.Persistence.DBDictionary;
-import com.gruppo3.wetravel.Persistence.DBDictionaryHelper;
+import com.gruppo3.wetravel.persistence.DBDictionary;
+import com.gruppo3.wetravel.persistence.DBDictionaryHelper;
 import com.gruppo3.wetravel.R;
 
 /**

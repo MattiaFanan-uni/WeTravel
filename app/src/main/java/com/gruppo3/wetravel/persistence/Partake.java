@@ -1,6 +1,4 @@
-package com.gruppo3.wetravel.Persistence;
-
-import android.location.Location;
+package com.gruppo3.wetravel.persistence;
 
 import com.eis.smslibrary.SMSPeer;
 import com.google.android.gms.maps.model.LatLng;
@@ -10,14 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 
-import android.location.Location;
-
-import com.eis.smslibrary.SMSPeer;
-import com.google.android.gms.maps.model.LatLng;
-
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.Setter;

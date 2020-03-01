@@ -4,9 +4,9 @@ import androidx.test.core.app.ApplicationProvider;
 
 import com.eis.smslibrary.SMSPeer;
 import com.google.android.gms.maps.model.LatLng;
-import com.gruppo3.wetravel.Persistence.DBDictionary;
-import com.gruppo3.wetravel.Persistence.DBDictionaryHelper;
-import com.gruppo3.wetravel.Persistence.Partake;
+import com.gruppo3.wetravel.persistence.DBDictionary;
+import com.gruppo3.wetravel.persistence.DBDictionaryHelper;
+import com.gruppo3.wetravel.persistence.Partake;
 
 import org.junit.After;
 import org.junit.Assert;
