@@ -1,5 +1,7 @@
 package com.gruppo3.wetravel.MapManager;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.gms.location.LocationRequest;
 
 import static com.google.android.gms.location.LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY;
@@ -10,8 +12,9 @@ import static com.google.android.gms.location.LocationRequest.PRIORITY_BALANCED_
  * @author Giovanni Barca
  */
 public class ViewMap {
-    private int mapZoom;
+    @NonNull
     private LocationRequest locationRequest; // Needed for requesting location updates
+    private int mapZoom;
 
     /**
      * Creates a new instance of ViewMap with default parameters:<br>
@@ -62,6 +65,7 @@ public class ViewMap {
      * Returns the current ViewMap assigned LocationRequest.
      * @return Object of type LocationRequest currently associated with this ViewMap
      */
+    @NonNull
     public LocationRequest getLocationRequest() {
         return locationRequest;
     }

@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Singleton class that download JSON data from Google Maps Directions Web Service and shows in a map fragment
+ * Singleton class that downloads JSON data from Google Maps Directions Web Service and shows in a map fragment
  *
  * @author Giovanni Barca
  */
@@ -41,7 +41,7 @@ public class DirectionsManager {
             @Override
             public void onFinishResult(String result) {
                 // Continue if download successfully terminated
-                if (!result.equals(DownloadTask.errorMessage)) {
+                if (!result.equals(DownloadTask.ERROR_MESSAGE)) {
                     new ParserTask(new ParserTask.AsyncResponse() {
                         @Override
                         public void onFinishResult(List<List<HashMap<String, String>>> result) {
@@ -67,7 +67,7 @@ public class DirectionsManager {
         parameters += "&" + "sensor=false"; // Sensor disabled
         parameters += "&" + "mode=driving"; // Mode driving. Other modes are: walking, bicyling, transit.
 
-        String key = "AIzaSyBAqE4yh01-eD6Tv2nQ7lxIMsFik807yIY"; // TODO: Modify key when apk is released
+        String key = "AIzaSyBAqE4yh01-eD6Tv2nQ7lxIMsFik807yIY"; // TODO: This key will be removed once the apk is released and will be used the restriction-less key inserted in a resource file
 
         // Returning the url to the web service
         return "https://maps.googleapis.com/maps/api/directions/json?" + parameters + "&key=" + key;
