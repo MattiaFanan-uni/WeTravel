@@ -18,6 +18,14 @@ import java.util.List;
  * @author Giovanni Barca
  */
 public class DirectionsManager {
+
+    public enum DirectionModes {
+        DRIVING,
+        WALKING,
+        BICYCLING,
+        TRANSIT
+    }
+
     private static final DirectionsManager instance = new DirectionsManager();
 
     /**
@@ -60,17 +68,23 @@ public class DirectionsManager {
      * @param dest Route's destination coordinates
      * @return A string containing the url to the Google Maps Directions API for requesting the route from origin to dest
      */
-    private String buildDirectionsUrl(LatLng origin, LatLng dest) {
-        String parameters = "";
-        parameters += "origin=" + origin.latitude + "," + origin.longitude; // Route origin
-        parameters += "&" + "destination=" + dest.latitude + "," + dest.longitude; // Destination of route
-        parameters += "&" + "sensor=false"; // Sensor disabled
-        parameters += "&" + "mode=driving"; // Mode driving. Other modes are: walking, bicyling, transit.
+    private String buildDirectionsUrl(LatLng origin, LatLng dest, DirectionModes directionMode) {
+        final String key = "AIzaSyBAqE4yh01-eD6Tv2nQ7lxIMsFik807yIY"; // TODO: This key will be removed once the apk is released and will be used the restriction-less key inserted in a resource file
+        final String URL_SPACER = "&";
 
-        String key = "AIzaSyBAqE4yh01-eD6Tv2nQ7lxIMsFik807yIY"; // TODO: This key will be removed once the apk is released and will be used the restriction-less key inserted in a resource file
+        StringBuilder url = new StringBuilder();
+        url.append("https://maps.googleapis.com/maps/api/directions/json?");
+        url.append("origin=").append(origin.latitude).append(",").append(origin.longitude);
+        url.append(URL_SPACER);
+        url.append("destination=").append(dest.latitude).append(",").append(dest.longitude);
+        url.append(URL_SPACER);
+        url.append("mode=").append(directionMode);
+        url.append(URL_SPACER);
+        url.append("sensor=").append("false");
+        url.append(URL_SPACER);
+        url.append("key=").append(key);
 
-        // Returning the url to the web service
-        return "https://maps.googleapis.com/maps/api/directions/json?" + parameters + "&key=" + key;
+        return url.toString();
     }
 
     /**
