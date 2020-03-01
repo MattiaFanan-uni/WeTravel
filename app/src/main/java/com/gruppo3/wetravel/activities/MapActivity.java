@@ -1,4 +1,4 @@
-package com.gruppo3.wetravel.Activities;
+package com.gruppo3.wetravel.activities;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -27,9 +27,9 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.gruppo3.wetravel.MapManager.Types.DestinationMarker;
-import com.gruppo3.wetravel.MapManager.DirectionsManager;
-import com.gruppo3.wetravel.MapManager.ViewMap;
+import com.gruppo3.wetravel.mapManager.types.DestinationMarker;
+import com.gruppo3.wetravel.mapManager.DirectionsManager;
+import com.gruppo3.wetravel.mapManager.ViewMap;
 import com.gruppo3.wetravel.R;
 
 /**
@@ -112,18 +112,17 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case ACCESS_FINE_LOCATION_REQUEST_CODE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Checking again permission to avoid runtime exceptions
-                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                        enableMyLocationAndLocationUpdates(); // Enabling and displaying current location (blue dot on map)
-                    }
-                } else {
-                    // Permission denied
-                    // Functionalities depending by this permission will no longer work
-                    Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show();
+        if (requestCode == ACCESS_FINE_LOCATION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Checking again permission to avoid runtime exceptions
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    enableMyLocationAndLocationUpdates(); // Enabling and displaying current location (blue dot on map)
                 }
+            } else {
+                // Permission denied
+                // Functionalities depending by this permission will no longer work
+                Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -218,18 +217,18 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
      * @param dest Object of type LatLng referring to the route's destination coordinates
      * @throws RuntimeException if map has not been yet initialised.
      */
-    public void showRoute(@NonNull LatLng origin, @NonNull LatLng dest) throws RuntimeException {
+    public void showRoute(@NonNull LatLng origin, @NonNull LatLng dest, DirectionsManager.DirectionModes directionMode) throws RuntimeException {
         if (mMap == null)
             throw new RuntimeException("Can't show route. Map is null.");
 
-        DirectionsManager.getInstance().computeRoute(mMap, origin, dest);
+        DirectionsManager.getInstance().computeRoute(mMap, origin, dest, directionMode);
     }
 
     /**
      * This callback is triggered when a new location update is received.<br>
      * It centers the camera to the last location received with an app-defined zoom constant.
      */
-    LocationCallback locationCallback = new LocationCallback() {
+    private LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
             Location location = locationResult.getLastLocation();

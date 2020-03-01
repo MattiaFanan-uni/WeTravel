@@ -1,13 +1,11 @@
-package com.gruppo3.wetravel.Persistence;
+package com.gruppo3.wetravel.persistence;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import com.eis.communication.network.NetDictionary;
 import com.eis.communication.network.NetSubscriberList;

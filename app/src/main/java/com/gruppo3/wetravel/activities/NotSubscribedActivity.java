@@ -1,4 +1,4 @@
-package com.gruppo3.wetravel.Activities;
+package com.gruppo3.wetravel.activities;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -12,7 +12,6 @@ import com.eis.communication.network.Invitation;
 import com.eis.communication.network.listeners.JoinInvitationListener;
 import com.eis.smslibrary.SMSPeer;
 import com.eis.smsnetwork.SMSJoinableNetManager;
-import com.gruppo3.wetravel.BroadcastReceivers.MessageReceiver;
 import com.gruppo3.wetravel.R;
 
 /**

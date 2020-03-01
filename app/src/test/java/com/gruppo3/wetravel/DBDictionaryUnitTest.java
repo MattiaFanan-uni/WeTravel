@@ -1,7 +1,7 @@
 package com.gruppo3.wetravel;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.gruppo3.wetravel.Persistence.DBDictionary;
+import com.gruppo3.wetravel.persistence.DBDictionary;
 
 import org.junit.Assert;
 import org.junit.Test;

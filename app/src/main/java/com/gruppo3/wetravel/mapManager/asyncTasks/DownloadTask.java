@@ -1,4 +1,4 @@
-package com.gruppo3.wetravel.MapManager.AsyncTasks;
+package com.gruppo3.wetravel.mapManager.asyncTasks;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -22,14 +22,14 @@ public class DownloadTask extends AsyncTask<String, String, String> {
      */
     public static final String ERROR_MESSAGE = "error";
 
+    private AsyncResponse delegate; // Method to be invoked when doInBackground is terminated
+
     /**
      * Nested interface to be implemented by the calling class to accomplish post-download operations in the same calling class.
      */
     public interface AsyncResponse {
         void onFinishResult(String result);
     }
-
-    private AsyncResponse delegate; // Method to be invoked when doInBackground is terminated
 
     /**
      * Instantiate a new DownloadTask passing a delegate method to be invoked when doInBackground() is terminated.

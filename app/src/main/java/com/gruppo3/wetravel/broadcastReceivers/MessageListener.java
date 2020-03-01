@@ -1,4 +1,4 @@
-package com.gruppo3.wetravel.BroadcastReceivers;
+package com.gruppo3.wetravel.broadcastReceivers;
 
 import com.eis.smslibrary.SMSPeer;
 

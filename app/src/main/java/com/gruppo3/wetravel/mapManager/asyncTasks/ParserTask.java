@@ -1,9 +1,9 @@
-package com.gruppo3.wetravel.MapManager.AsyncTasks;
+package com.gruppo3.wetravel.mapManager.asyncTasks;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.gruppo3.wetravel.MapManager.DirectionsJSONParser;
+import com.gruppo3.wetravel.mapManager.DirectionsJSONParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,14 +19,14 @@ import java.util.List;
  */
 public class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
 
+    private AsyncResponse delegate; // Method to be invoked when doInBackground is terminated
+
     /**
      * Nested interface to be implemented by the calling class to accomplish post-parsing operations in the same calling class.
      */
     public interface AsyncResponse {
         void onFinishResult(List<List<HashMap<String, String>>> result);
     }
-
-    private AsyncResponse delegate; // Method to be invoked when doInBackground is terminated
 
     /**
      * Instantiate a new ParserTask passing a delegate method to be invoked when doInBackground() is terminated.

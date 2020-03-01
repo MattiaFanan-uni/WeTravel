@@ -3,9 +3,9 @@ package com.gruppo3.wetravel;
 import android.app.Activity;
 import android.content.Intent;
 
-import com.gruppo3.wetravel.Activities.LauncherActivity;
-import com.gruppo3.wetravel.Activities.MapActivity;
-import com.gruppo3.wetravel.Activities.NotSubscribedActivity;
+import com.gruppo3.wetravel.activities.LauncherActivity;
+import com.gruppo3.wetravel.activities.MapActivity;
+import com.gruppo3.wetravel.activities.NotSubscribedActivity;
 
 import org.junit.Before;
 import org.junit.Test;

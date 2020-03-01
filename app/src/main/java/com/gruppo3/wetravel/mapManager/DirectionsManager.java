@@ -1,12 +1,12 @@
-package com.gruppo3.wetravel.MapManager;
+package com.gruppo3.wetravel.mapManager;
 
 import android.graphics.Color;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.gruppo3.wetravel.MapManager.AsyncTasks.DownloadTask;
-import com.gruppo3.wetravel.MapManager.AsyncTasks.ParserTask;
+import com.gruppo3.wetravel.mapManager.asyncTasks.DownloadTask;
+import com.gruppo3.wetravel.mapManager.asyncTasks.ParserTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,8 +41,8 @@ public class DirectionsManager {
      * @param origin Route's origin coordinates
      * @param dest Route's destination coordinates
      */
-    public void computeRoute(final GoogleMap googleMap, LatLng origin, LatLng dest) {
-        String googleDirectionsApiUrl = buildDirectionsUrl(origin, dest); // Builds the Google Maps Directions API request url
+    public void computeRoute(final GoogleMap googleMap, LatLng origin, LatLng dest, DirectionModes directionMode) {
+        String googleDirectionsApiUrl = buildDirectionsUrl(origin, dest, directionMode); // Builds the Google Maps Directions API request url
 
         // Downloads the JSON from Google Maps Directions Web Service, parses it and sends to showRoutFromPrasedJSON(String) if there were no errors
         new DownloadTask(new DownloadTask.AsyncResponse() {
