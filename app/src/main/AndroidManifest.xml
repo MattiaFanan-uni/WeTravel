@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.gruppo3.wetravel">
-
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- Network dictionary library permissions -->
     <uses-permission android:name="android.permission.SEND_SMS" />
-    <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
-    <uses-permission android:name="android.provider.Telephony.SMS_RECEIVED" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- Maps permission -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -15,38 +15,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".activities.NotSubscribedActivity"
-            android:label="@string/title_activity_not_subscribed"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".activities.LauncherActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".activities.FriendsActivity" />
-        <activity
-            android:name=".activities.Home"
-            android:label="@string/title_activity_home"
-            android:theme="@style/AppTheme.NoActionBar" />
-
-        <service
-            android:name=".InvitationService"
-            android:enabled="true"
-            android:exported="true" />
-
-        <activity android:name=".activities.invActivity" />
-        <activity
-            android:name=".Invitation.Friends"
-            android:label="@string/title_activity_friends"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".Invitation.Invitation"
-            android:label="@string/title_activity_invitations"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".activities.SignUpActivity" />
 
         <meta-data
             android:name="preloaded_fonts"
@@ -55,9 +23,30 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
+        <activity android:name=".activities.LauncherActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.NotSubscribedActivity"
+            android:label="@string/title_activity_not_subscribed"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activities.FriendsActivity"
+            android:label="@string/title_activity_friends"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.MapActivity"
             android:label="@string/title_activity_maps" />
+
+        <service
+            android:name="com.eis.smsnetwork.broadcast.BroadcastReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>
 
 </manifest>

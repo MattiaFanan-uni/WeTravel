@@ -21,7 +21,7 @@ import com.gruppo3.wetravel.R;
  * @author Riccardo Crociani
  */
 
-public class NotSubscribedActivity extends AppCompatActivity implements JoinInvitationListener<Invitation<SMSPeer>> {
+public class NotSubscribedActivity extends AppCompatActivity {
 
     private static final String INVITED_YOU = "Invited you";
     private static final String DO_YOU_WANT_TO_JOIN = "Do you want to join its network?";
@@ -49,11 +49,10 @@ public class NotSubscribedActivity extends AppCompatActivity implements JoinInvi
      *
      * @param invitation The received invitation.
      */
-    @Override
+    /*@Override
     public void onJoinInvitationReceived(Invitation<SMSPeer> invitation) {
-
         createDialog(invitation);
-    }
+    }*/
 
     /**
      * It is create a dialog to accept or decline the invitation received

@@ -1,14 +1,22 @@
 package com.gruppo3.wetravel.activities;
 
+import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import com.eis.communication.network.Invitation;
+import com.eis.communication.network.listeners.JoinInvitationListener;
+import com.eis.smslibrary.SMSPeer;
 import com.eis.smsnetwork.SMSJoinableNetManager;
-import com.gruppo3.wetravel.persistence.DBDictionary;
-import com.gruppo3.wetravel.persistence.DBDictionaryHelper;
 import com.gruppo3.wetravel.R;
+
+import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * If the user is already subscribed it will be opened the  MapActivty,
@@ -21,33 +29,68 @@ import com.gruppo3.wetravel.R;
 
 public class LauncherActivity extends AppCompatActivity {
 
+    private static final String[] PERMISSIONS = {
+            Manifest.permission.SEND_SMS,
+            Manifest.permission.RECEIVE_SMS,
+            Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.READ_SMS
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launcher);
 
-        //Net Setup
-        DBDictionary netDictionary = new DBDictionary(new DBDictionaryHelper(getApplicationContext()));
-        SMSJoinableNetManager.getInstance().setup(getApplicationContext());
-        SMSJoinableNetManager.getInstance().setNetSubscriberList(netDictionary);
-        SMSJoinableNetManager.getInstance().setNetDictionary(netDictionary);
+        // Requesting permissions needed by Network-Dictionary library
+        ActivityCompat.requestPermissions(this, PERMISSIONS, 1);
 
+        // Setting up SMSJoinableNetManager
+        SMSJoinableNetManager.getInstance().setup(this);
+        SMSJoinableNetManager.getInstance().setJoinInvitationListener(new JoinInvitationListener<Invitation<SMSPeer>>() {
+            @Override
+            public void onJoinInvitationReceived(Invitation<SMSPeer> invitation) {
+                SMSJoinableNetManager.getInstance().acceptJoinInvitation(invitation);
+            }
+        });
 
+        // Setting up a TimerTask watching for new subscribers to my network
+        setupSubscribersWatcher();
+
+        // If the user is subscribed to at least one network launches the map activity,
+        // otherwise launches the NotSubscribedActivity
         if (isSubscribed()) {
-            finish();//close this activity
-            Intent callMapActivity = new Intent(this, MapActivity.class);
-            startActivity(callMapActivity);
+            Intent mapActivityIntent = new Intent(this, MapActivity.class);
+            startActivity(mapActivityIntent);
         } else {
-            finish();//close this activity
-            Intent callNotSubscribedActivity = new Intent(this, NotSubscribedActivity.class);
-            startActivity(callNotSubscribedActivity);
+            Intent notSubscribedActivityIntent = new Intent(this, NotSubscribedActivity.class);
+            startActivity(notSubscribedActivityIntent);
         }
     }
 
     /**
-     * @return boolean True if the user is subscribed to a network
+     * Checks if the user is subscribed to at least one network.
+     * @return True if the user is subscribed to a network, false otherwise
      */
     private boolean isSubscribed() {
         return SMSJoinableNetManager.getInstance().getNetSubscriberList().getSubscribers().size() > 1;
+    }
+
+    /**
+     * Setups a new TimerTask watching for new subscribers to my network every 1000ms
+     */
+    private void setupSubscribersWatcher() {
+        Timer timer = new Timer();
+        timer.schedule(new SubscribersWatcher(), 0, 1000);
+    }
+
+    /**
+     * Gets subscriber list to my network and prints to the logcat
+     */
+    class SubscribersWatcher extends TimerTask {
+        @Override
+        public void run() {
+            SMSPeer[] subsToNet = SMSJoinableNetManager.getInstance().getNetSubscriberList().getSubscribers().toArray(new SMSPeer[] {});
+            Log.d("NET_DEMO", Arrays.toString(subsToNet));
+        }
     }
 }
