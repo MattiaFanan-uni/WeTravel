@@ -16,19 +16,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".Activities.NotSubscribedActivity"
+            android:name=".activities.NotSubscribedActivity"
             android:label="@string/title_activity_not_subscribed"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".Activities.LauncherActivity">
+        <activity android:name=".activities.LauncherActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activities.FriendsActivity" />
+        <activity android:name=".activities.FriendsActivity" />
         <activity
-            android:name=".Activities.Home"
+            android:name=".activities.Home"
             android:label="@string/title_activity_home"
             android:theme="@style/AppTheme.NoActionBar" />
 
@@ -37,7 +37,7 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".Activities.invActivity" />
+        <activity android:name=".activities.invActivity" />
         <activity
             android:name=".Invitation.Friends"
             android:label="@string/title_activity_friends"
@@ -46,7 +46,7 @@
             android:name=".Invitation.Invitation"
             android:label="@string/title_activity_invitations"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".Activities.SignUpActivity" />
+        <activity android:name=".activities.SignUpActivity" />
 
         <meta-data
             android:name="preloaded_fonts"
@@ -56,7 +56,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".Activities.MapActivity"
+            android:name=".activities.MapActivity"
             android:label="@string/title_activity_maps" />
     </application>
 

@@ -1,4 +1,4 @@
-package com.gruppo3.wetravel.BroadcastReceivers;
+package com.gruppo3.wetravel.broadcastReceivers;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.telephony.SmsMessage;
 
 import com.eis.smslibrary.SMSPeer;
-import com.eis.smsnetwork.RequestType;
 
 import java.util.ArrayList;
 

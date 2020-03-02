@@ -1,9 +1,9 @@
-package com.gruppo3.wetravel.MapManager.AsyncTasks;
+package com.gruppo3.wetravel.mapManager.asyncTasks;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.gruppo3.wetravel.MapManager.DirectionsJSONParser;
+import com.gruppo3.wetravel.mapManager.DirectionsJSONParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,19 +19,29 @@ import java.util.List;
  */
 public class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
 
+    private AsyncResponse delegate; // Method to be invoked when doInBackground is terminated
+
     /**
-     * Nested interface to accomplish post-download operations from calling class
+     * Nested interface to be implemented by the calling class to accomplish post-parsing operations in the same calling class.
      */
     public interface AsyncResponse {
         void onFinishResult(List<List<HashMap<String, String>>> result);
     }
 
-    private AsyncResponse delegate = null; // Method to be invoked when doInBackground is terminated
-
+    /**
+     * Instantiate a new ParserTask passing a delegate method to be invoked when doInBackground() is terminated.
+     * @param delegate Delegated method to be invoked when doInBackground is terminated
+     */
     public ParserTask(AsyncResponse delegate) {
         this.delegate = delegate; // Sends result to the delegate method
     }
 
+    /**
+     * Asynchronously parses passed jsonData using {@link DirectionsJSONParser DirectionsJSONParser}.<br>
+     * Data must be in the format given by Google Maps Directions web service.
+     * @param jsonData String containing json data (in Google Map Directions web service format) to be parsed
+     * @return Parsed data. If something went wrong, an empty list is returned
+     */
     @Override
     protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
         JSONObject jObject;
@@ -49,9 +59,12 @@ public class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<Str
         return routes;
     }
 
+    /**
+     * Passes parsed data to the delegated method.
+     * @param result Parsed json data
+     */
     @Override
     protected void onPostExecute(List<List<HashMap<String, String>>> result) {
-        Log.e("Attenzione", "onPostExecute()");
         delegate.onFinishResult(result);
     }
 }

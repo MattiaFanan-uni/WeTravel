@@ -1,4 +1,4 @@
-package com.gruppo3.wetravel.Activities;
+package com.gruppo3.wetravel.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;

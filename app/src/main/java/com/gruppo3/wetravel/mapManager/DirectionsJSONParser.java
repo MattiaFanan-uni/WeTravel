@@ -1,4 +1,4 @@
-package com.gruppo3.wetravel.MapManager;
+package com.gruppo3.wetravel.mapManager;
 
 import android.util.Log;
 
@@ -71,11 +71,16 @@ public class DirectionsJSONParser {
     private List decodePoly(String encoded) {
 
         List poly = new ArrayList();
-        int index = 0, len = encoded.length();
-        int lat = 0, lng = 0;
+        int index = 0;
+        int len = encoded.length();
+        int lat = 0;
+        int lng = 0;
 
         while (index < len) {
-            int b, shift = 0, result = 0;
+            int b;
+            int shift = 0;
+            int result = 0;
+            
             do {
                 b = encoded.charAt(index++) - 63;
                 result |= (b & 0x1f) << shift;

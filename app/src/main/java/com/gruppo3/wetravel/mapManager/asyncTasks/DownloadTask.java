@@ -1,4 +1,4 @@
-package com.gruppo3.wetravel.MapManager.AsyncTasks;
+package com.gruppo3.wetravel.mapManager.asyncTasks;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -17,21 +17,33 @@ import java.net.URL;
  */
 public class DownloadTask extends AsyncTask<String, String, String> {
 
-    public static final String errorMessage = "error";
+    /**
+     * String returned when something in the download phase went wrong.
+     */
+    public static final String ERROR_MESSAGE = "error";
+
+    private AsyncResponse delegate; // Method to be invoked when doInBackground is terminated
 
     /**
-     * Nested interface to accomplish post-download operations from calling class
+     * Nested interface to be implemented by the calling class to accomplish post-download operations in the same calling class.
      */
     public interface AsyncResponse {
         void onFinishResult(String result);
     }
 
-    private AsyncResponse delegate = null; // Method to be invoked when doInBackground is terminated
-
+    /**
+     * Instantiate a new DownloadTask passing a delegate method to be invoked when doInBackground() is terminated.
+     * @param delegate Delegated method to be invoked when doInBackground is terminated
+     */
     public DownloadTask(AsyncResponse delegate) {
         this.delegate = delegate;
     }
 
+    /**
+     * Asynchronously downloads data from a given url and returns it.
+     * @param url String containing url of the data to be downloaded
+     * @return Downloaded data
+     */
     @Override
     protected String doInBackground(String... url) {
         String data;
@@ -40,12 +52,16 @@ public class DownloadTask extends AsyncTask<String, String, String> {
             data = downloadUrl(url[0]); // Download data from the given url
         } catch (IOException e) {
             Log.e("DownloadTask", Log.getStackTraceString(e));
-            data = errorMessage; // Returns an error message if something went wrong
+            data = ERROR_MESSAGE; // Returns an error message if something went wrong
         }
 
         return data;
     }
 
+    /**
+     * Passes downloaded data to the delegated method.
+     * @param result Downloaded data
+     */
     @Override
     protected void onPostExecute(String result) {
         delegate.onFinishResult(result); // Sends result to the delegate method
@@ -55,7 +71,7 @@ public class DownloadTask extends AsyncTask<String, String, String> {
      * Opens a connection to strUrl and returns data downloaded from it.
      * @param strUrl Url to open a connection and download something from
      * @return Downloaded data from the given url
-     * @throws IOException If connection or data download can't be done
+     * @throws IOException If connection or data download can't be established
      */
     private String downloadUrl(String strUrl) throws IOException {
         String data = "";
@@ -80,9 +96,11 @@ public class DownloadTask extends AsyncTask<String, String, String> {
             data = sb.toString();
             br.close();
         } catch (Exception e) {
+            // Something went wrong... setting data to an error message.
             Log.e("downloadUrl", Log.getStackTraceString(e));
-            data = errorMessage;
+            data = ERROR_MESSAGE;
         } finally {
+            // Closing all streams and connections even if something went wrong
             if (iStream != null)
                 iStream.close();
 

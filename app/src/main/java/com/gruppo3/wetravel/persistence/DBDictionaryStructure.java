@@ -1,4 +1,4 @@
-package com.gruppo3.wetravel.Persistence;
+package com.gruppo3.wetravel.persistence;
 
 import android.provider.BaseColumns;
 

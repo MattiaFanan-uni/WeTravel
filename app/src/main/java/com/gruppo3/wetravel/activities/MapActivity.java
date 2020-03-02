@@ -1,5 +1,6 @@
-package com.gruppo3.wetravel.Activities;
+package com.gruppo3.wetravel.activities;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -26,9 +27,9 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.gruppo3.wetravel.MapManager.Types.DestinationMarker;
-import com.gruppo3.wetravel.MapManager.DirectionsManager;
-import com.gruppo3.wetravel.MapManager.ViewMap;
+import com.gruppo3.wetravel.mapManager.types.DestinationMarker;
+import com.gruppo3.wetravel.mapManager.DirectionsManager;
+import com.gruppo3.wetravel.mapManager.ViewMap;
 import com.gruppo3.wetravel.R;
 
 /**
@@ -47,21 +48,18 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     private final int ACCESS_FINE_LOCATION_REQUEST_CODE = 1; // Request code for ACCESS_FINE_LOCATION permission
 
     private GoogleMap mMap = null; // Main map obj reference
-    private ViewMap viewMap; // Class with map display and manipulation operations
+    private ViewMap viewMap = null; // Class with map display and manipulation operations
 
     private FusedLocationProviderClient fusedLocationProviderClient; // Needed for acquiring location updates
     private LocationRequest locationRequest; // Needed for requesting location updates
 
-    public MapActivity() {
-        this(new ViewMap());
-    }
-
     /**
-     * Instantiate a new object of type MapActivity with a ViewMap object containing needed methods.
-     * @param viewMap Object of type ViewMap containing needed method to accomplish operations on the map
+     * Instantiate a new object of type MapActivity with a ViewMap object containing needed methods.<br>
+     * If a viewMap is not already registered, then instantiates a new one with default parameters.
      */
-    public MapActivity(ViewMap viewMap) {
-        this.viewMap = viewMap;
+    public MapActivity() {
+        if (viewMap == null)
+            this.viewMap = new ViewMap();
     }
 
     @Override
@@ -98,33 +96,33 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 // Permissions already granted
-                enableMyLocationAndLocationUpdates();
+                enableMyLocationAndLocationUpdates();  // Enabling and displaying current location (blue dot on map)
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, ACCESS_FINE_LOCATION_REQUEST_CODE);
             }
         }
         else {
-            enableMyLocationAndLocationUpdates();
+            enableMyLocationAndLocationUpdates(); // Enabling and displaying current location (blue dot on map)
         }
     }
 
     /**
+     * Method invoked when user choice if grant or not a permission.
      * @see <a href="https://developer.android.com/guide/topics/permissions/overview">Permissions overview</a>
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case ACCESS_FINE_LOCATION_REQUEST_CODE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Checking again permission to avoid runtime exceptions
-                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                        enableMyLocationAndLocationUpdates();
-                    }
-                } else {
-                    // Permission denied
-                    // Functionalities depending by this permission will no longer work
-                    Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show();
+        if (requestCode == ACCESS_FINE_LOCATION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Checking again permission to avoid runtime exceptions
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    enableMyLocationAndLocationUpdates(); // Enabling and displaying current location (blue dot on map)
                 }
+            } else {
+                // Permission denied
+                // Functionalities depending by this permission will no longer work
+                Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -136,13 +134,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
+        mMap = googleMap; // Getting the map ready to work (main map on the activity layout)
 
-        // Checks (and eventually asks for) permissions needed by this activity
-        checkPermissions();
+        checkPermissions(); // Checks (and eventually asks for) permissions needed by this activity
 
-        // Gets ViewMap LocationRequest
-        locationRequest = viewMap.getLocationRequest();
+        locationRequest = viewMap.getLocationRequest(); // Gets ViewMap LocationRequest
 
         // If user moves the map, we stop following current location
         mMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
@@ -192,12 +188,20 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     }
 
     /**
+     * Register a custom ViewMap object to this activity.
+     * @param viewMap Add a viewMap to this activity for UI and location customization
+     */
+    public void registerViewMap(ViewMap viewMap) {
+        this.viewMap = viewMap;
+    }
+
+    /**
      * Add a marker on the map with the parameters included in the given DestinationMarker.
      * @param destinationMarker DestinationMarker object containing information about the marker to be added
      * @throws RuntimeException if map has not been yet initialised.
      */
-    public void addMarker(DestinationMarker destinationMarker) throws RuntimeException {
-        if (mMap != null)
+    public void addMarker(@NonNull DestinationMarker destinationMarker) throws RuntimeException {
+        if (mMap == null)
             throw new RuntimeException("Can't add markers. Map is null.");
 
         mMap.addMarker(new MarkerOptions()
@@ -213,18 +217,18 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
      * @param dest Object of type LatLng referring to the route's destination coordinates
      * @throws RuntimeException if map has not been yet initialised.
      */
-    public void showRoute(LatLng origin, LatLng dest) throws RuntimeException {
-        if (mMap != null)
+    public void showRoute(@NonNull LatLng origin, @NonNull LatLng dest, DirectionsManager.DirectionModes directionMode) throws RuntimeException {
+        if (mMap == null)
             throw new RuntimeException("Can't show route. Map is null.");
 
-        DirectionsManager.getInstance().computeRoute(mMap, origin, dest);
+        DirectionsManager.getInstance().computeRoute(mMap, origin, dest, directionMode);
     }
 
     /**
      * This callback is triggered when a new location update is received.<br>
      * It centers the camera to the last location received with an app-defined zoom constant.
      */
-    LocationCallback locationCallback = new LocationCallback() {
+    private LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
             Location location = locationResult.getLastLocation();
