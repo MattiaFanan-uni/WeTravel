@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,6 +33,20 @@ public class NotSubscribedActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_not_subscribed);
+
+        // Setting up SMSJoinableNetManager
+        SMSJoinableNetManager.getInstance().setup(this);
+        SMSJoinableNetManager.getInstance().setJoinInvitationListener(new JoinInvitationListener<Invitation<SMSPeer>>() {
+            @Override
+            public void onJoinInvitationReceived(final Invitation<SMSPeer> invitation) {
+                NotSubscribedActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        createDialog(invitation);
+                    }
+                });
+            }
+        });
     }
 
     /**
@@ -45,28 +60,20 @@ public class NotSubscribedActivity extends AppCompatActivity {
     }
 
     /**
-     * Callback for received invitation to join a network from another user.
-     *
-     * @param invitation The received invitation.
-     */
-    /*@Override
-    public void onJoinInvitationReceived(Invitation<SMSPeer> invitation) {
-        createDialog(invitation);
-    }*/
-
-    /**
      * It is create a dialog to accept or decline the invitation received
      *
      * @param invitation The invitation Received
      */
     private void createDialog(final Invitation<SMSPeer> invitation) {
-        AlertDialog.Builder dialog = new AlertDialog.Builder(getApplicationContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        dialog.setMessage(invitation.getInviterPeer().getAddress() + INVITED_YOU)
+        builder.setMessage(invitation.getInviterPeer().getAddress() + INVITED_YOU)
                 .setTitle(DO_YOU_WANT_TO_JOIN)
                 .setPositiveButton(ACCEPT, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         replyInvitation(invitation);
+                        Intent openMapActivity = new Intent(getApplicationContext(), MapActivity.class);
+                        startActivity(openMapActivity);
                     }
                 })
                 .setNegativeButton(DECLINE, new DialogInterface.OnClickListener() {
@@ -75,7 +82,8 @@ public class NotSubscribedActivity extends AppCompatActivity {
                     }
                 });
 
-        dialog.create().show();
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
     /**
@@ -85,5 +93,7 @@ public class NotSubscribedActivity extends AppCompatActivity {
      */
     private void replyInvitation(Invitation<SMSPeer> invitation) {
         SMSJoinableNetManager.getInstance().acceptJoinInvitation(invitation);
+        Intent mapActivityIntent = new Intent(this, MapActivity.class);
+        startActivity(mapActivityIntent);
     }
 }

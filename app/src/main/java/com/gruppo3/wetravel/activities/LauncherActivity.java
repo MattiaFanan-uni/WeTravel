@@ -1,6 +1,8 @@
 package com.gruppo3.wetravel.activities;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -82,6 +84,7 @@ public class LauncherActivity extends AppCompatActivity {
         Timer timer = new Timer();
         timer.schedule(new SubscribersWatcher(), 0, 1000);
     }
+
 
     /**
      * Gets subscriber list to my network and prints to the logcat
