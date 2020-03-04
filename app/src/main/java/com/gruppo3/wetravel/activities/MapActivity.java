@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
@@ -34,12 +35,13 @@ import com.gruppo3.wetravel.R;
 
 /**
  * This activity shows a map with device current position and markers for available "missions".<br>
+ * To correctly implement a Map view, this class extends {@link FragmentActivity}.<br>
  *
- * This activity needs ACCESS_FINE_LOCATION (or ACCESS_COURSE_LOCATION) permission.<br>
- * Because of using FusedLocationProviderClient, it needs Google Play Services installed too.<br>
- * No checks are made for this condition because they're already done by Google Maps fragment.<br>
- * When Google Play Services are ready to work, {@link #onMapReady(GoogleMap) onMapReady} is called and the activity can start doing its job.
- * Can be set a custom location request interval using Intent extras (see Constant Field values)
+ * This activity needs ACCESS_FINE_LOCATION (or ACCESS_COURSE_LOCATION) permission.
+ * It also needs Google Play Services installed and this is automatically checked before {@link #onMapReady(GoogleMap)} is being called.<br>
+ *
+ * When an instance of this class is created, a default {@link ViewMap} object is registered.
+ * User can register a custom one calling {@link #registerViewMap(ViewMap)}.
  *
  * @author Giovanni Barca
  */
@@ -48,27 +50,27 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     private final int ACCESS_FINE_LOCATION_REQUEST_CODE = 1; // Request code for ACCESS_FINE_LOCATION permission
 
     private GoogleMap mMap = null; // Main map obj reference
-    private ViewMap viewMap = null; // Class with map display and manipulation operations
-
     private FusedLocationProviderClient fusedLocationProviderClient; // Needed for acquiring location updates
     private LocationRequest locationRequest; // Needed for requesting location updates
 
     /**
-     * Instantiate a new object of type MapActivity with a ViewMap object containing needed methods.<br>
-     * If a viewMap is not already registered, then instantiates a new one with default parameters.
+     * When a new {@link MapActivity} object is created, a default {@link ViewMap} object is registered to the created instance.
      */
-    public MapActivity() {
-        if (viewMap == null)
-            this.viewMap = new ViewMap();
-    }
+    @NonNull
+    private ViewMap viewMap = new ViewMap(); // Class with map display and manipulation operations
 
+    /**
+     * {@inheritDoc}
+     * When this activity is created, a {@link SupportMapFragment} associates to the map view
+     * and a {@link FusedLocationProviderClient} is taken, to provide current device position, using {@link LocationServices#getFusedLocationProviderClient(Context)}.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         // Gets the Location Provider Client for requesting location updates to
@@ -76,6 +78,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     }
 
     /**
+     * {@inheritDoc}
      * When this activity isn't displayed, suspends location updates to preserve battery and avoid useless operations.
      */
     @Override
@@ -89,7 +92,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
     /**
      * Checks if needed permissions by this activity are granted and eventually asks them.
-     * If permissions are granted then request location updates and enable MyLocation layer.
+     * If permissions are granted then requests current location updates and shows it on the map with a blue dot.
+     *
      * @see <a href="https://developer.android.com/guide/topics/permissions/overview">Permissions overview</a>
      */
     private void checkPermissions() {
@@ -107,11 +111,13 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     }
 
     /**
-     * Method invoked when user choice if grant or not a permission.
+     * {@inheritDoc}
+     * Method invoked when the user chooses to grant a permission or not.
+     *
      * @see <a href="https://developer.android.com/guide/topics/permissions/overview">Permissions overview</a>
      */
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == ACCESS_FINE_LOCATION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Checking again permission to avoid runtime exceptions
@@ -129,8 +135,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     /**
      * This callback is triggered when the map is ready to be used.
      * If Google Play services are not installed on the device, the user will be prompted to install
-     * them inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
+     * them inside the {@link SupportMapFragment}.
+     * This method will only be triggered once the user has installed Google Play services and returned to the app.
+     *
+     * @param googleMap A {@link GoogleMap} instance.
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -170,7 +178,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
     /**
      * Requests location updates and enables MyLocation (blue dot on the map).
-     * @throws RuntimeException if no FusedLocationProviderClient is registered nor a map is initialized
+     * @throws RuntimeException if no {@link FusedLocationProviderClient} is registered nor a map is initialized.
      */
     private void enableMyLocationAndLocationUpdates() throws RuntimeException {
         // Enabling location updates
@@ -189,15 +197,15 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
     /**
      * Register a custom ViewMap object to this activity.
-     * @param viewMap Add a viewMap to this activity for UI and location customization
+     * @param viewMap Add a viewMap to this activity for UI and location customization. Never null.
      */
-    public void registerViewMap(ViewMap viewMap) {
+    public void registerViewMap(@NonNull ViewMap viewMap) {
         this.viewMap = viewMap;
     }
 
     /**
      * Add a marker on the map with the parameters included in the given DestinationMarker.
-     * @param destinationMarker DestinationMarker object containing information about the marker to be added
+     * @param destinationMarker DestinationMarker object containing information about the marker to be added. Never null.
      * @throws RuntimeException if map has not been yet initialised.
      */
     public void addMarker(@NonNull DestinationMarker destinationMarker) throws RuntimeException {
@@ -213,11 +221,12 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
     /**
      * Shows the shortest route from origin to dest.
-     * @param origin Object of type LatLng referring to the route's origin coordinates
-     * @param dest Object of type LatLng referring to the route's destination coordinates
+     * @param origin Object of type LatLng referring to the route's origin coordinates. Never null.
+     * @param dest Object of type LatLng referring to the route's destination coordinates. Never null.
+     * @param directionMode Specifies in which mode the route has to be calculated (driving, walking, bicycle or transit mode). Never null.
      * @throws RuntimeException if map has not been yet initialised.
      */
-    public void showRoute(@NonNull LatLng origin, @NonNull LatLng dest, DirectionsManager.DirectionModes directionMode) throws RuntimeException {
+    public void showRoute(@NonNull LatLng origin, @NonNull LatLng dest, @NonNull DirectionsManager.DirectionModes directionMode) throws RuntimeException {
         if (mMap == null)
             throw new RuntimeException("Can't show route. Map is null.");
 

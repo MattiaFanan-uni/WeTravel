@@ -3,6 +3,8 @@ package com.gruppo3.wetravel.mapManager.asyncTasks;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,7 +47,7 @@ public class DownloadTask extends AsyncTask<String, String, String> {
      * @return Downloaded data
      */
     @Override
-    protected String doInBackground(String... url) {
+    protected String doInBackground(@NonNull String... url) {
         String data;
 
         try {
