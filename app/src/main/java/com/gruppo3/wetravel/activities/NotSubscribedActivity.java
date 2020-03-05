@@ -16,84 +16,63 @@ import com.eis.smsnetwork.SMSJoinableNetManager;
 import com.gruppo3.wetravel.R;
 
 /**
- * This activity is opened when the user runs the app and is not subscribed yet
- * It allows the user to send an invitation to a friend or to accept or decline an incoming invitation
+ * This activity is opened when the user runs the app and is not subscribed to any network yet.
+ * It allows the user to send an invitation to a friend or to accept or decline an incoming invitation.
  *
  * @author Riccardo Crociani
  */
 
 public class NotSubscribedActivity extends AppCompatActivity {
 
-    private static final String INVITED_YOU = "Invited you";
+    // TODO: Should add these strings in strings resource file
+    private static final String INVITED_YOU = "invited you!";
     private static final String DO_YOU_WANT_TO_JOIN = "Do you want to join its network?";
-    private static final String ACCEPT = "Accept";
-    private static final String DECLINE = "Decline";
+    private static final String ACCEPT = "ACCEPT";
+    private static final String DECLINE = "DECLINE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_not_subscribed);
 
-        // Setting up SMSJoinableNetManager
-        SMSJoinableNetManager.getInstance().setup(this);
-        SMSJoinableNetManager.getInstance().setJoinInvitationListener(new JoinInvitationListener<Invitation<SMSPeer>>() {
-            @Override
-            public void onJoinInvitationReceived(final Invitation<SMSPeer> invitation) {
-                NotSubscribedActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        createDialog(invitation);
-                    }
-                });
-            }
-        });
+        // Setting up the listener for incoming invitation
+        SMSJoinableNetManager.getInstance().setJoinInvitationListener(invitation -> NotSubscribedActivity.this.runOnUiThread(() -> createDialog(invitation)));
     }
 
     /**
-     * It opens the activity that manages the invitations
+     * It opens the activity that manages the invitations.
      *
-     * @param v Clicked view
+     * @param v Clicked view.
      */
     public void buttonInvite_onClick(View v) {
-        Intent openFriendsActivityIntent = new Intent(this, FriendsActivity.class);
-        startActivity(openFriendsActivityIntent);
+        startActivity(new Intent(this, FriendsActivity.class));
     }
 
     /**
-     * It is create a dialog to accept or decline the invitation received
+     * Shows a an {@link AlertDialog} requesting the user to accept or decline the received invitation.
      *
-     * @param invitation The invitation Received
+     * @param invitation A received {@link Invitation<SMSPeer>}.
      */
     private void createDialog(final Invitation<SMSPeer> invitation) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        builder.setMessage(invitation.getInviterPeer().getAddress() + INVITED_YOU)
-                .setTitle(DO_YOU_WANT_TO_JOIN)
-                .setPositiveButton(ACCEPT, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        replyInvitation(invitation);
-                        Intent openMapActivity = new Intent(getApplicationContext(), MapActivity.class);
-                        startActivity(openMapActivity);
-                    }
+        new AlertDialog.Builder(this)
+                .setTitle(invitation.getInviterPeer().getAddress() + INVITED_YOU)
+                .setMessage(DO_YOU_WANT_TO_JOIN)
+                .setPositiveButton(ACCEPT, (dialog, id) -> {
+                    replyInvitation(invitation);
+                    startActivity(new Intent(getApplicationContext(), MapActivity.class));
                 })
-                .setNegativeButton(DECLINE, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
-
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();
+                .setNegativeButton(DECLINE, (dialog, id) -> dialog.cancel())
+                .create()
+                .show();
     }
 
     /**
-     * Accept the invitation and join the network
+     * Accept the invitation, joins the network and start the {@link MapActivity}.
      *
-     * @param invitation The invitation received
+     * @param invitation An {@link Invitation<SMSPeer>} to accept.
      */
     private void replyInvitation(Invitation<SMSPeer> invitation) {
-        SMSJoinableNetManager.getInstance().acceptJoinInvitation(invitation);
-        Intent mapActivityIntent = new Intent(this, MapActivity.class);
-        startActivity(mapActivityIntent);
+        SMSJoinableNetManager.getInstance().acceptJoinInvitation(invitation); // Accepting the invitation
+        startActivity(new Intent(this, MapActivity.class)); // Starting the map activity
     }
 }

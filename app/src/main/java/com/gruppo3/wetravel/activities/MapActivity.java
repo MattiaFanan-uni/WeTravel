@@ -96,6 +96,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             finish(); // Closing activity if the map has not been found
         }
 
+        //checkPermissions(); // Checks (and eventually asks for) permissions needed by this activity
+
         // Gets the Location Provider Client for requesting location updates to
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
     }
@@ -165,8 +167,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap; // Getting the map ready to work (main map on the activity layout)
-
-        checkPermissions(); // Checks (and eventually asks for) permissions needed by this activity
 
         locationRequest = viewMap.getLocationRequest(); // Gets ViewMap LocationRequest
 
