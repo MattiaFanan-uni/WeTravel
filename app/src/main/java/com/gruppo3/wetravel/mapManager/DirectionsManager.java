@@ -2,6 +2,7 @@ package com.gruppo3.wetravel.mapManager;
 
 import android.graphics.Color;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -13,6 +14,7 @@ import com.gruppo3.wetravel.mapManager.asyncTasks.ParserTask;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Singleton class that downloads JSON data from Google Maps Directions Web Service, compute it and shows the corresponding {@link com.google.android.gms.maps.model.Polyline} in a map fragment.
@@ -21,35 +23,18 @@ import java.util.List;
  */
 public class DirectionsManager {
     /**
-     * Possible path computing options using Google Maps web service.
-     * <li>
-     *     <ul>DRIVING: Uses roads suitable to car transit;</ul>
-     *     <ul>WALkING: Uses roads and walk paths;</ul>
-     *     <ul>BICYCLING: Uses roads, walk paths and cycle paths;</ul>
-     *     <ul>TRANSIT: Uses mass transit available in a specific zone combined with walking paths.</ul>
-     * </li>
-     */
-    public enum DirectionModes {
-        DRIVING,
-        WALKING,
-        BICYCLING,
-        TRANSIT
-    }
-
-    /**
      * Default polyline width value if no parameter is specified when computing route.
      */
     private static final int DEFAULT_LINE_WIDTH = 12;
-
     /**
      * Default polyline color value if no parameter is specified when computing route.
      */
     private static final int DEFAULT_LINE_COLOR = Color.BLUE;
-
     private static final DirectionsManager instance = new DirectionsManager();
 
     /**
      * Gets the instance of this singleton class.
+     *
      * @return Instance of this singleton class
      */
     public static DirectionsManager getInstance() {
@@ -58,14 +43,16 @@ public class DirectionsManager {
 
     /**
      * Computes and shows on the map the requested route from origin to destination with argument width and color.
-     * @param googleMap Object of type {@link GoogleMap} where the polyline will be displayed. Never null.
-     * @param origin Route's origin coordinates. Never null.
-     * @param dest Route's destination coordinates. Never null.
-     * @param directionMode Specifies in which mode the route has to be calculated (driving, walking, bicycle or transit mode). Never null.
-     * @param lineWidth Width of the PolyLine that will be displayed on the map.
-     * @param lineColor Color of the PolyLine that will be displayed on the map. {@link Color} class can be used (e.g. Color.BLUE)
+     * If an error occurs, the async task is interrupted and nothing new is displayed on the map.
+     *
+     * @param googleMap     Object of type {@link GoogleMap} where the {@link com.google.android.gms.maps.model.Polyline} will be displayed. Never null.
+     * @param origin        {@link LatLng} object refering to route's origin coordinates. Never null.
+     * @param dest          {@link LatLng} object refering to route's destination coordinates. Never null.
+     * @param directionMode Specifies in which {@link DirectionModes direction mode} the route has to be calculated (driving, walking, bicycle or transit mode). Never null.
+     * @param lineWidth     Width of the PolyLine that will be displayed on the map.
+     * @param lineColor     Color of the PolyLine that will be displayed on the map. {@link Color} class can be used (e.g. Color.BLUE)
      */
-    public void computeRoute(@NonNull final GoogleMap googleMap, @NonNull LatLng origin, @NonNull LatLng dest, @NonNull DirectionModes directionMode, final int lineWidth, final int lineColor) {
+    public void computeRoute(@NonNull final GoogleMap googleMap, @NonNull LatLng origin, @NonNull LatLng dest, @NonNull DirectionModes directionMode, final int lineWidth, @ColorInt final int lineColor) {
         String googleDirectionsApiUrl = buildDirectionsUrl(origin, dest, directionMode); // Builds the Google Maps Directions API request url
 
         // Downloads the JSON from Google Maps Directions Web Service, parses it and sends to showRoutFromParsedJSON(String) if there were no errors
@@ -77,7 +64,7 @@ public class DirectionsManager {
                     new ParserTask(new ParserTask.AsyncResponse() {
                         @Override
                         public void onFinishResult(List<List<HashMap<String, String>>> result) {
-                            if (result.size() > 0) // If there were errors, list size is 0
+                            if (result != null) // If there were errors, result is null
                                 createPolylineFromParsedJSON(googleMap, result, lineWidth, lineColor);
                         }
                     }).execute(result);
@@ -87,12 +74,13 @@ public class DirectionsManager {
     }
 
     /**
-     * Computes and shows on the map the requested route from origin to destination with a 12px wide blue line.<br>
-     * If something went wrong, nothing is displayed on the map.
-     * @param googleMap Object of type {@link GoogleMap} where the polyline will be displayed. Never null.
-     * @param origin Route's origin coordinates. Never null.
-     * @param dest Route's destination coordinates. Never null.
-     * @param directionMode Specifies in which mode the route has to be calculated (driving, walking, bicycle or transit mode). Never null.
+     * Computes and shows on the map the requested route from origin to destination with a {@value DEFAULT_LINE_WIDTH}px wide {@value DEFAULT_LINE_COLOR} line.<br>
+     * If an error occurs the async task is interrupted and nothing new is displayed on the map.
+     *
+     * @param googleMap     Object of type {@link GoogleMap} where the {@link com.google.android.gms.maps.model.Polyline} will be displayed. Never null.
+     * @param origin        {@link LatLng} object refering to route's origin coordinates. Never null.
+     * @param dest          {@link LatLng} object refering to route's destination coordinates. Never null.
+     * @param directionMode Specifies in which {@link DirectionModes direction mode} the route has to be calculated (driving, walking, bicycle or transit mode). Never null.
      */
     public void computeRoute(@NonNull final GoogleMap googleMap, @NonNull LatLng origin, @NonNull LatLng dest, @NonNull DirectionModes directionMode) {
         computeRoute(googleMap, origin, dest, directionMode, DEFAULT_LINE_WIDTH, DEFAULT_LINE_COLOR);
@@ -100,10 +88,11 @@ public class DirectionsManager {
 
     /**
      * Builds an url with parameters for requesting route to Google Maps Directions API from origin to destination.
-     * @param origin Route's origin coordinates. Never null.
-     * @param dest Route's destination coordinates. Never null.
-     * @param directionMode Specifies in which mode the route has to be calculated (driving, walking, bicycle or transit mode). Never null.
-     * @return A string containing the url to the Google Maps Directions API for requesting the route from origin to dest.
+     *
+     * @param origin        {@link LatLng} object refering to route's origin coordinates. Never null.
+     * @param dest          {@link LatLng} object refering to route's destination coordinates. Never null.
+     * @param directionMode Specifies in which {@link DirectionModes direction mode} the route has to be calculated (driving, walking, bicycle or transit mode). Never null.
+     * @return A string containing the url to the Google Maps Directions API for requesting the route from origin to destination.
      */
     private String buildDirectionsUrl(@NonNull LatLng origin, @NonNull LatLng dest, @NonNull DirectionModes directionMode) {
         final String DEV_KEY = "AIzaSyBAqE4yh01-eD6Tv2nQ7lxIMsFik807yIY"; // TODO: This key will be removed once the apk is released and will be used the restriction-less key inserted in a resource file
@@ -124,13 +113,14 @@ public class DirectionsManager {
     }
 
     /**
-     * Creates a PolyLine from the parsed JSON and shows it to the passed GoogleMap object.
+     * Creates a {@link com.google.android.gms.maps.model.Polyline} from the parsed JSON and shows it to the passed {@link GoogleMap} object.
+     *
      * @param googleMap Object of type {@link GoogleMap} where the polyline will be displayed. Never null.
-     * @param result Parsed JSON from Google Maps API Web Service. Never null.
+     * @param result    Parsed JSON from Google Maps API Web Service. Never null.
      * @param lineWidth Width of the PolyLine that will be displayed on the map.
      * @param lineColor Color of the PolyLine that will be displayed on the map. {@link Color} class can be used (e.g. Color.BLUE)
      */
-    private void createPolylineFromParsedJSON(@NonNull GoogleMap googleMap, @NonNull List< List<HashMap<String, String>>> result, int lineWidth, int lineColor) {
+    private void createPolylineFromParsedJSON(@NonNull GoogleMap googleMap, @NonNull List<List<HashMap<String, String>>> result, int lineWidth, int lineColor) {
         ArrayList points = null;
         PolylineOptions lineOptions = null;
 
@@ -143,13 +133,16 @@ public class DirectionsManager {
             for (int j = 0; j < path.size(); j++) {
                 HashMap<String, String> point = path.get(j);
 
-                double lat = Double.parseDouble(point.get("lat")); // Ignore IDE warning. In our code, "lat" argument will be never null.
-                double lng = Double.parseDouble(point.get("lng")); // Ignore IDE warning. In our code, "lng" argument will be never null.
+                double lat = Double.parseDouble(Objects.requireNonNull(point.get("lat")));
+                double lng = Double.parseDouble(Objects.requireNonNull(point.get("lng")));
                 LatLng position = new LatLng(lat, lng);
 
+
+                //noinspection unchecked
                 points.add(position);
             }
 
+            //noinspection unchecked
             lineOptions.addAll(points);
             lineOptions.width(lineWidth);
             lineOptions.color(lineColor);
@@ -157,5 +150,21 @@ public class DirectionsManager {
         }
 
         googleMap.addPolyline(lineOptions);
+    }
+
+    /**
+     * Possible path computing options using Google Maps web service.
+     * <li>
+     * <ul>DRIVING: Uses roads suitable to car transit;</ul>
+     * <ul>WALkING: Uses roads and walk paths;</ul>
+     * <ul>BICYCLING: Uses roads, walk paths and cycle paths;</ul>
+     * <ul>TRANSIT: Uses mass transit available in a specific zone combined with walking paths.</ul>
+     * </li>
+     */
+    public enum DirectionModes {
+        DRIVING,
+        WALKING,
+        BICYCLING,
+        TRANSIT
     }
 }

@@ -7,16 +7,16 @@ import com.google.android.gms.location.LocationRequest;
 import static com.google.android.gms.location.LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY;
 
 /**
- * Class containing main parameters for building a ViewMap for working with MapActivity's map fragment.<br>
- *
+ * Class containing main parameters for building a ViewMap for working with {@link com.gruppo3.wetravel.activities.MapActivity} map fragment.<br>
+ * <p>
  * If a default {@link LocationRequest} is used, the default parameters are:
  * <ul>
- *  <li>locationRequestInterval is set to {@value DEFAULT_INTERVAL} that is the right compromise between precision and battery saving;</li>
- *  <li>locationRequestFastestInterval is set to {@value DEFAULT_FASTEST_INTERVAL} to avoid annoying movements of the map;</li>
- *  <li>locationRequest priority is set to {@value DEFAULT_PRIORITY};</li>
+ * <li>locationRequestInterval is set to {@value DEFAULT_INTERVAL} that is the right compromise between precision and battery saving;</li>
+ * <li>locationRequestFastestInterval is set to {@value DEFAULT_FASTEST_INTERVAL} to avoid annoying fast movements of the map;</li>
+ * <li>locationRequest priority is set to {@value DEFAULT_PRIORITY}.</li>
  * </ul>
- *
- * The default zoom level is {@value DEFAULT_MAP_ZOOM}
+ * <p>
+ * The default zoom level is {@value DEFAULT_MAP_ZOOM}.
  *
  * @author Giovanni Barca
  */
@@ -44,8 +44,9 @@ public class ViewMap {
 
     /**
      * Creates a new instance of {@link ViewMap} with given {@link LocationRequest} and map zoom level parameters.
-     * @param locationRequest Object of type LocationRequest with custom request options.
-     * @param mapZoom Map zoom level.
+     *
+     * @param locationRequest Object of type {@link LocationRequest} with custom request options.
+     * @param mapZoom         Map zoom level.
      */
     public ViewMap(@NonNull LocationRequest locationRequest, int mapZoom) {
         this.locationRequest = locationRequest;
@@ -53,8 +54,9 @@ public class ViewMap {
     }
 
     /**
-     * Creates a new instance of ViewMap with given LocationRequest parameter and default zoom level.
-     * @param locationRequest Object of type LocationRequest with custom parameters.
+     * Creates a new instance of ViewMap with given {@link LocationRequest} parameter and default zoom level.
+     *
+     * @param locationRequest Object of type {@link LocationRequest} with custom parameters.
      */
     public ViewMap(@NonNull LocationRequest locationRequest) {
         this();
@@ -63,6 +65,7 @@ public class ViewMap {
 
     /**
      * Creates a new instance of ViewMap with given zoom level and a default {@link LocationRequest} instance.
+     *
      * @param mapZoom Map zoom level.
      */
     public ViewMap(int mapZoom) {
@@ -72,6 +75,7 @@ public class ViewMap {
 
     /**
      * Returns the current {@link ViewMap}'s assigned {@link LocationRequest}.
+     *
      * @return Object of type {@link LocationRequest} currently associated with this {@link ViewMap}. Never null.
      */
     @NonNull
@@ -80,8 +84,9 @@ public class ViewMap {
     }
 
     /**
-     * Returns the current {@link ViewMap} assigned zoom level.
-     * @return Integer of the default zoom level currently associated with this ViewMap
+     * Returns the current ViewMap assigned zoom level.
+     *
+     * @return Integer of the default zoom level currently associated with this ViewMap.
      */
     public int getMapZoom() {
         return mapZoom;
