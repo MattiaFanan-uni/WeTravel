@@ -1,4 +1,4 @@
-package com.gruppo3.wetravel.mapManager;
+package com.gruppo3.wetravel.mapManager.types;
 
 import androidx.annotation.NonNull;
 

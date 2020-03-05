@@ -3,6 +3,8 @@ package com.gruppo3.wetravel.mapManager.asyncTasks;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.gruppo3.wetravel.mapManager.DirectionsJSONParser;
 
 import org.json.JSONException;
@@ -25,6 +27,10 @@ public class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<Str
      * Nested interface to be implemented by the calling class to accomplish post-parsing operations in the same calling class.
      */
     public interface AsyncResponse {
+        /**
+         * Method to be invoked when this AsyncTask is terminated and return the result to.
+         * @param result The result from the AsyncTask containing the parsed list.
+         */
         void onFinishResult(List<List<HashMap<String, String>>> result);
     }
 
@@ -39,11 +45,15 @@ public class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<Str
     /**
      * Asynchronously parses passed jsonData using {@link DirectionsJSONParser DirectionsJSONParser}.<br>
      * Data must be in the format given by Google Maps Directions web service.
-     * @param jsonData String containing json data (in Google Map Directions web service format) to be parsed
-     * @return Parsed data. If something went wrong, an empty list is returned
+     * @param jsonData String containing json data (in Google Map Directions web service format) to be parsed. Never null.
+     * @return Parsed data. If something went wrong, an empty list is returned. Never null.
+     * @throws RuntimeException If passed an empty url string.
      */
+    @NonNull
     @Override
-    protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
+    protected List<List<HashMap<String, String>>> doInBackground(@NonNull String... jsonData) throws RuntimeException {
+        if (jsonData.length == 0)
+            throw new RuntimeException("Parameter string can't be empty.");
         JSONObject jObject;
         List<List<HashMap<String, String>>> routes = null;
 
@@ -56,6 +66,7 @@ public class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<Str
             Log.e("ParserTask", Log.getStackTraceString(e));
             routes.clear(); // Clearing the List to avoid displaying inconsistent data
         }
+
         return routes;
     }
 

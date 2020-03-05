@@ -36,6 +36,16 @@ public class DirectionsManager {
         TRANSIT
     }
 
+    /**
+     * Default polyline width value if no parameter is specified when computing route.
+     */
+    private static final int DEFAULT_LINE_WIDTH = 12;
+
+    /**
+     * Default polyline color value if no parameter is specified when computing route.
+     */
+    private static final int DEFAULT_LINE_COLOR = Color.BLUE;
+
     private static final DirectionsManager instance = new DirectionsManager();
 
     /**
@@ -44,34 +54,6 @@ public class DirectionsManager {
      */
     public static DirectionsManager getInstance() {
         return instance;
-    }
-
-    /**
-     * Computes and shows on the map the requested route from origin to destination with a 12px wide blue line.
-     * @param googleMap Object of type {@link GoogleMap} where the polyline will be displayed. Never null.
-     * @param origin Route's origin coordinates. Never null.
-     * @param dest Route's destination coordinates. Never null.
-     * @param directionMode Specifies in which mode the route has to be calculated (driving, walking, bicycle or transit mode). Never null.
-     */
-    public void computeRoute(@NonNull final GoogleMap googleMap, @NonNull LatLng origin, @NonNull LatLng dest, @NonNull DirectionModes directionMode) {
-        String googleDirectionsApiUrl = buildDirectionsUrl(origin, dest, directionMode); // Builds the Google Maps Directions API request url
-
-        // Downloads the JSON from Google Maps Directions Web Service, parses it and sends to showRoutFromParsedJSON(String) if there were no errors
-        new DownloadTask(new DownloadTask.AsyncResponse() {
-            @Override
-            public void onFinishResult(String result) {
-                // Continue if download successfully terminated
-                if (!result.equals(DownloadTask.ERROR_MESSAGE)) {
-                    new ParserTask(new ParserTask.AsyncResponse() {
-                        @Override
-                        public void onFinishResult(List<List<HashMap<String, String>>> result) {
-                            if (result.size() > 0) // If there were errors, list size is 0
-                                createPolylineFromParsedJSON(googleMap, result, 12, Color.BLUE);
-                        }
-                    }).execute(result);
-                }
-            }
-        }).execute(googleDirectionsApiUrl);
     }
 
     /**
@@ -86,7 +68,7 @@ public class DirectionsManager {
     public void computeRoute(@NonNull final GoogleMap googleMap, @NonNull LatLng origin, @NonNull LatLng dest, @NonNull DirectionModes directionMode, final int lineWidth, final int lineColor) {
         String googleDirectionsApiUrl = buildDirectionsUrl(origin, dest, directionMode); // Builds the Google Maps Directions API request url
 
-        // Downloads the JSON from Google Maps Directions Web Service, parses it and sends to showRoutFromPrasedJSON(String) if there were no errors
+        // Downloads the JSON from Google Maps Directions Web Service, parses it and sends to showRoutFromParsedJSON(String) if there were no errors
         new DownloadTask(new DownloadTask.AsyncResponse() {
             @Override
             public void onFinishResult(String result) {
@@ -96,12 +78,24 @@ public class DirectionsManager {
                         @Override
                         public void onFinishResult(List<List<HashMap<String, String>>> result) {
                             if (result.size() > 0) // If there were errors, list size is 0
-                                 createPolylineFromParsedJSON(googleMap, result, lineWidth, lineColor);
+                                createPolylineFromParsedJSON(googleMap, result, lineWidth, lineColor);
                         }
                     }).execute(result);
                 }
             }
         }).execute(googleDirectionsApiUrl);
+    }
+
+    /**
+     * Computes and shows on the map the requested route from origin to destination with a 12px wide blue line.<br>
+     * If something went wrong, nothing is displayed on the map.
+     * @param googleMap Object of type {@link GoogleMap} where the polyline will be displayed. Never null.
+     * @param origin Route's origin coordinates. Never null.
+     * @param dest Route's destination coordinates. Never null.
+     * @param directionMode Specifies in which mode the route has to be calculated (driving, walking, bicycle or transit mode). Never null.
+     */
+    public void computeRoute(@NonNull final GoogleMap googleMap, @NonNull LatLng origin, @NonNull LatLng dest, @NonNull DirectionModes directionMode) {
+        computeRoute(googleMap, origin, dest, directionMode, DEFAULT_LINE_WIDTH, DEFAULT_LINE_COLOR);
     }
 
     /**

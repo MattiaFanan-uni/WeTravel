@@ -30,6 +30,10 @@ public class DownloadTask extends AsyncTask<String, String, String> {
      * Nested interface to be implemented by the calling class to accomplish post-download operations in the same calling class.
      */
     public interface AsyncResponse {
+        /**
+         * Method to be invoked when this AsyncTask is terminated and return the result to.
+         * @param result The result from the AsyncTask containing downloaded data.
+         */
         void onFinishResult(String result);
     }
 
@@ -43,13 +47,17 @@ public class DownloadTask extends AsyncTask<String, String, String> {
 
     /**
      * Asynchronously downloads data from a given url and returns it.
-     * @param url String containing url of the data to be downloaded
-     * @return Downloaded data
+     * @param url String containing url of the data to be downloaded. Never null.
+     * @return Downloaded data. Never null.
+     * @throws RuntimeException If passed an empty url string.
      */
+    @NonNull
     @Override
-    protected String doInBackground(@NonNull String... url) {
-        String data;
+    protected String doInBackground(@NonNull String... url) throws RuntimeException {
+        if (url.length == 0)
+            throw new RuntimeException("Parameter string can't be empty");
 
+        String data;
         try {
             data = downloadUrl(url[0]); // Download data from the given url
         } catch (IOException e) {
@@ -70,13 +78,13 @@ public class DownloadTask extends AsyncTask<String, String, String> {
     }
 
     /**
-     * Opens a connection to strUrl and returns data downloaded from it.
-     * @param strUrl Url to open a connection and download something from
-     * @return Downloaded data from the given url
-     * @throws IOException If connection or data download can't be established
+     * Opens a connection to strUrl parameter and returns data downloaded from it.
+     * @param strUrl Url to open a connection and download data from.
+     * @return Downloaded data from the given url or {@link #ERROR_MESSAGE} if something went wrong.
+     * @throws IOException If connection or data download can't be established.
      */
     private String downloadUrl(String strUrl) throws IOException {
-        String data = "";
+        String data;
         InputStream iStream = null;
         HttpURLConnection urlConnection = null;
 

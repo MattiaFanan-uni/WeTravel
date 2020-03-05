@@ -30,14 +30,14 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.gruppo3.wetravel.mapManager.types.DestinationMarker;
 import com.gruppo3.wetravel.mapManager.DirectionsManager;
-import com.gruppo3.wetravel.mapManager.ViewMap;
+import com.gruppo3.wetravel.mapManager.types.ViewMap;
 import com.gruppo3.wetravel.R;
 
 /**
  * This activity shows a map with device current position and markers for available "missions".<br>
  * To correctly implement a Map view, this class extends {@link FragmentActivity}.<br>
  *
- * This activity needs ACCESS_FINE_LOCATION (or ACCESS_COURSE_LOCATION) permission.
+ * This activity needs {@link Manifest.permission#ACCESS_FINE_LOCATION} (or {@link Manifest.permission#ACCESS_COARSE_LOCATION}) permission.
  * It also needs Google Play Services installed and this is automatically checked before {@link #onMapReady(GoogleMap)} is being called.<br>
  *
  * When an instance of this class is created, a default {@link ViewMap} object is registered.
@@ -78,7 +78,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     }
 
     /**
-     * {@inheritDoc}
      * When this activity isn't displayed, suspends location updates to preserve battery and avoid useless operations.
      */
     @Override
@@ -114,6 +113,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
      * {@inheritDoc}
      * Method invoked when the user chooses to grant a permission or not.
      *
+     * @see FragmentActivity#onRequestPermissionsResult(int, String[], int[])
      * @see <a href="https://developer.android.com/guide/topics/permissions/overview">Permissions overview</a>
      */
     @Override
@@ -148,8 +148,22 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
         locationRequest = viewMap.getLocationRequest(); // Gets ViewMap LocationRequest
 
-        // If user moves the map, we stop following current location
         mMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
+            /**
+             * {@inheritDoc}
+             * Listen to map camera movement.
+             * If the user moves the map, this method stops location updates.
+             *
+             * @param reason The reason for the camera change. Possible values:
+             *               <ul>
+             *                  <li>REASON_GESTURE: User gestures on the map.</li>
+             *                  <li>REASON_API_ANIMATION: Default animations resulting from user interaction.</li>
+             *                  <li>REASON_DEVELOPER_ANIMATION: Developer animations.</li>
+             *               </ul>
+             *
+             * @see <a href="https://developers.google.com/android/reference/com/google/android/gms/maps/GoogleMap.OnCameraMoveStartedListener">GoogleMap.OnCameraMoveStartedListener()</a>
+             * @see FusedLocationProviderClient#removeLocationUpdates(LocationCallback)
+             */
             @Override
             public void onCameraMoveStarted(int reason) {
                 if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE)
@@ -157,8 +171,17 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             }
         });
 
-        // If user clicks on a marker, we stop following current location
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            /**
+             * {@inheritDoc}
+             * Listen to map marker's clicks.
+             * To avoid auto-moving map's camera while user is interacting with a marker, this method stops location updates.
+             *
+             * @param marker The marker the user clicked on.
+             * @return false because the listener hasn't consumed the event and the default behavior should occur. The default behavior is for the camera to move to the marker and an info window to appear.
+             *
+             * @see <a href="https://developers.google.com/android/reference/com/google/android/gms/maps/GoogleMap.OnMarkerClickListener">GoogleMap.OnMarkerClickListener()</a>
+             */
             @Override
             public boolean onMarkerClick(Marker marker) {
                 fusedLocationProviderClient.removeLocationUpdates(locationCallback);
@@ -168,6 +191,16 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
         // If user clicks on MyLocation button, we resume following current location
         mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+            /**
+             * {@inheritDoc}
+             * Listen to MyLocation button clicks.
+             * If the user clicks MyLocation button, we resume following current location.
+             *
+             * @return false because the listener hasn't consumed the event and the default behavior should occur. The default behavior is for the camera move such that it is centered on the user location.
+             *
+             * {@link GoogleMap.OnMyLocationButtonClickListener}
+             * @see <a href="https://developers.google.com/android/reference/com/google/android/gms/maps/GoogleMap.OnMyLocationButtonClickListener">GoogleMap.OnMyLocationButtonClickListener()</a>
+             */
             @Override
             public boolean onMyLocationButtonClick() {
                 fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
