@@ -5,11 +5,17 @@ import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
+import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.util.Preconditions;
 import androidx.fragment.app.FragmentActivity;
 
+import com.eis.communication.network.listeners.GetResourceListener;
+import com.eis.communication.network.listeners.SetResourceListener;
+import com.eis.smsnetwork.SMSFailReason;
+import com.eis.smsnetwork.SMSJoinableNetManager;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -87,6 +93,43 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
         // Gets the Location Provider Client for requesting location updates to
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+
+        // TODO: Is only a "test"
+        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SMSJoinableNetManager.getInstance().setResource("Ciao", "Wow", new SetResourceListener<String, String, SMSFailReason>() {
+                    @Override
+                    public void onResourceSet(String key, String value) {
+                        Toast.makeText(getApplicationContext(), "Resource set", Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onResourceSetFail(String key, String value, SMSFailReason reason) {
+                        Toast.makeText(getApplicationContext(), "Resource not set: " + reason.toString(), Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
+
+        findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SMSJoinableNetManager.getInstance().getResource("Ciao", new GetResourceListener<String, String, SMSFailReason>() {
+                    @Override
+                    public void onGetResource(String key, String value) {
+                        Toast.makeText(getApplicationContext(), "Got resource. Key is: " + key + "Value is: " + value, Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onGetResourceFailed(String key, SMSFailReason reason) {
+                        Toast.makeText(getApplicationContext(), "Can't get resource: " + reason.toString(), Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
+
     }
 
     /**
