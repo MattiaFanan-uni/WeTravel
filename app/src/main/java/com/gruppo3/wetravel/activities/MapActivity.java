@@ -2,12 +2,15 @@ package com.gruppo3.wetravel.activities;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -100,6 +103,18 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
         // Gets the Location Provider Client for requesting location updates to
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        Button friendButton = (Button) findViewById(R.id.friendButton);
+        Button getInvited = (Button) findViewById(R.id.getInvitedButton);
+        friendButton.setOnClickListener(v -> {
+            Intent openFriendsActivity = new Intent(getApplicationContext(), FriendsActivity.class);
+            startActivity(openFriendsActivity);
+        });
+        getInvited.setOnClickListener(v -> {
+            Intent openNotSubscribedActivity = new Intent(getApplicationContext(), NotSubscribedActivity.class);
+            startActivity(openNotSubscribedActivity);
+        });
+
     }
 
     /**

@@ -29,18 +29,18 @@
         android:weightSum="3">
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/friendButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Button" />
+            android:text="Friends" />
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/getInvitedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Button" />
+            android:text="get invited" />
 
         <Button
             android:id="@+id/button3"

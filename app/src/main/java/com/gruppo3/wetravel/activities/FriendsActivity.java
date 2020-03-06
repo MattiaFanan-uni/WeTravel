@@ -34,16 +34,9 @@ public class FriendsActivity extends AppCompatActivity implements InviteListener
 
         editTextFriendNumber = findViewById(R.id.friendNumber); // EditText containing phone number of the user to invite
         mapButton = (Button) findViewById(R.id.mapButton);
-        mapButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (SMSJoinableNetManager.getInstance().getNetSubscriberList().getSubscribers().size() > 0) {
-                    Intent openMapActivity = new Intent(getApplicationContext(), MapActivity.class);
-                    startActivity(openMapActivity);
-                } else {
-                    Toast.makeText(getApplicationContext(), "You must join a network", Toast.LENGTH_LONG).show();
-                }
-            }
+        mapButton.setOnClickListener(v -> {
+            Intent openMapActivity = new Intent(getApplicationContext(), MapActivity.class);
+            startActivity(openMapActivity);
         });
     }
 
