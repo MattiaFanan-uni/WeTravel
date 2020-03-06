@@ -114,7 +114,7 @@ public class LauncherActivity extends AppCompatActivity {
      * @return True if the user is subscribed to a network, false otherwise.
      */
     private boolean isSubscribed() {
-        return SMSJoinableNetManager.getInstance().getNetSubscriberList().getSubscribers().size() > 1;
+        return SMSJoinableNetManager.getInstance().getNetSubscriberList().getSubscribers().size() > 0;
     }
 
     /**

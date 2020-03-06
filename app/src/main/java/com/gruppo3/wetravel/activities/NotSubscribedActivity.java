@@ -36,7 +36,17 @@ public class NotSubscribedActivity extends AppCompatActivity {
         setContentView(R.layout.activity_not_subscribed);
 
         // Setting up the listener for incoming invitation
-        SMSJoinableNetManager.getInstance().setJoinInvitationListener(invitation -> NotSubscribedActivity.this.runOnUiThread(() -> createDialog(invitation)));
+        SMSJoinableNetManager.getInstance().setJoinInvitationListener(new JoinInvitationListener<Invitation<SMSPeer>>() {
+            @Override
+            public void onJoinInvitationReceived(final Invitation<SMSPeer> invitation) {
+                NotSubscribedActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        NotSubscribedActivity.this.createDialog(invitation);
+                    }
+                });
+            }
+        });
     }
 
     /**
@@ -55,13 +65,22 @@ public class NotSubscribedActivity extends AppCompatActivity {
      */
     private void createDialog(final Invitation<SMSPeer> invitation) {
         new AlertDialog.Builder(this)
-                .setTitle(invitation.getInviterPeer().getAddress() + INVITED_YOU)
+                .setTitle(invitation.getInviterPeer().getAddress() + " " + INVITED_YOU)
                 .setMessage(DO_YOU_WANT_TO_JOIN)
-                .setPositiveButton(ACCEPT, (dialog, id) -> {
-                    replyInvitation(invitation);
-                    startActivity(new Intent(getApplicationContext(), MapActivity.class));
+                .setPositiveButton(ACCEPT, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        NotSubscribedActivity.this.replyInvitation(invitation);
+                        Intent openMapActivity = new Intent(getApplicationContext(), MapActivity.class);
+                        startActivity(openMapActivity);
+                    }
                 })
-                .setNegativeButton(DECLINE, (dialog, id) -> dialog.cancel())
+                .setNegativeButton(DECLINE, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                })
                 .create()
                 .show();
     }

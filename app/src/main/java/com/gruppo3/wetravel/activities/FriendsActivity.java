@@ -2,10 +2,13 @@ package com.gruppo3.wetravel.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.eis.communication.network.listeners.InviteListener;
 import com.eis.smslibrary.SMSPeer;
@@ -22,6 +25,7 @@ import com.gruppo3.wetravel.R;
 public class FriendsActivity extends AppCompatActivity implements InviteListener<SMSPeer, SMSFailReason> {
 
     private EditText editTextFriendNumber;
+    private Button mapButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,11 +33,27 @@ public class FriendsActivity extends AppCompatActivity implements InviteListener
         setContentView(R.layout.activity_friends);
 
         editTextFriendNumber = findViewById(R.id.friendNumber); // EditText containing phone number of the user to invite
+        mapButton = (Button) findViewById(R.id.mapButton);
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (SMSJoinableNetManager.getInstance().getNetSubscriberList().getSubscribers().size() > 0) {
+                    Intent openMapActivity = new Intent(getApplicationContext(), MapActivity.class);
+                    startActivity(openMapActivity);
+                } else {
+                    Toast.makeText(getApplicationContext(), "You must join a network", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 
     public void inviteButton_onClick(View v) {
-        SMSPeer peerToInvite = new SMSPeer(editTextFriendNumber.getText().toString());
-        SMSJoinableNetManager.getInstance().invite(peerToInvite, this);
+        try {
+            SMSPeer peerToInvite = new SMSPeer(editTextFriendNumber.getText().toString());
+            SMSJoinableNetManager.getInstance().invite(peerToInvite, this);
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), "Enter a number to invite", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override

@@ -6,6 +6,20 @@
     android:layout_height="match_parent"
     tools:context=".activities.FriendsActivity">
 
+    <ImageView
+        android:id="@+id/imageBackground"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0.7"
+        android:scaleType="centerCrop"
+        android:src="@drawable/launcher_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
     <EditText
         android:id="@+id/friendNumber"
         android:layout_width="309dp"
@@ -33,27 +47,16 @@
         app:layout_constraintTop_toBottomOf="@+id/friendNumber"
         app:layout_constraintVertical_bias="0.105" />
 
-    <ListView
-        android:id="@+id/invitationList"
-        android:layout_width="406dp"
-        android:layout_height="330dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <Button
+        android:id="@+id/mapButton"
+        android:layout_width="160dp"
+        android:layout_height="60dp"
+        android:text="MAP"
+        app:layout_constraintBottom_toBottomOf="@+id/imageBackground"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.45"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/inviteButton" />
-
-    <TextView
-        android:id="@+id/invitationTextView"
-        android:layout_width="285dp"
-        android:layout_height="68dp"
-        android:layout_gravity="center"
-        android:padding="@dimen/activity_horizontal_margin"
-        android:textColor="@color/colorPrimary"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.126"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/invitationList"
-        app:layout_constraintVertical_bias="0.058" />
+        app:layout_constraintTop_toBottomOf="@+id/inviteButton"
+        app:layout_constraintVertical_bias="0.088" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
