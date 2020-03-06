@@ -12,15 +12,6 @@
     app:behavior_peekHeight="56dp"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Do something now..."
-        android:textAlignment="center"
-        android:textSize="30sp"
-        tools:text="Do something now..." />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -30,24 +21,18 @@
 
         <Button
             android:id="@+id/friendButton"
-            android:layout_width="wrap_content"
+            android:layout_width="203dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Friends" />
 
         <Button
             android:id="@+id/getInvitedButton"
-            android:layout_width="wrap_content"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="get invited" />
 
-        <Button
-            android:id="@+id/button3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Button" />
     </LinearLayout>
 
 
