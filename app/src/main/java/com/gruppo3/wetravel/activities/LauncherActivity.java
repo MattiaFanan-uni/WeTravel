@@ -5,16 +5,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
 
-import com.eis.communication.network.Invitation;
-import com.eis.communication.network.listeners.JoinInvitationListener;
 import com.eis.smslibrary.SMSPeer;
 import com.eis.smsnetwork.SMSJoinableNetManager;
 import com.gruppo3.wetravel.R;
@@ -24,8 +20,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * This is the first launched activity.
- * If the user is already subscribed to a network, it will opened a {@link MapActivity},
+ * This is the first displayed activity when the app is launched.<br>
+ * It will verify and eventually request permissions and setup the {@link SMSJoinableNetManager}.<br>
+ * If the user is already subscribed to a network, it will open a {@link MapActivity},
  * otherwise will be opened a {@link NotSubscribedActivity} which allows to invite or receive invites to a network.
  *
  * @author Riccardo Crociani, Giovanni Barca
@@ -54,24 +51,12 @@ public class LauncherActivity extends AppCompatActivity {
         // Setting up SMSJoinableNetManager
         SMSJoinableNetManager.getInstance().setup(this);
 
-        // Setting up a TimerTask watching for new subscribers to my network
-        //setupSubscribersWatcher();
-
         // If the user has permissions and is subscribed to at least one network launches the map activity,
         // if he has permissions but isn't subscribed to any network launches the NotSubscribedActivity,
         // otherwise requests permissions.
-        boolean permissionsGranted = checkPermissions();
-        boolean isSubscribed = isSubscribed();
-        if (permissionsGranted) {
-            if (isSubscribed) {
-                Intent mapActivityIntent = new Intent(this, MapActivity.class);
-                startActivity(mapActivityIntent);
-            } else {
-                Intent notSubscribedActivityIntent = new Intent(this, NotSubscribedActivity.class);
-                startActivity(notSubscribedActivityIntent);
-            }
-        }
-        else {
+        if (checkPermissions()) {
+            startSecondActivity();
+        } else {
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSIONS_ALL_RC);
         }
     }
@@ -80,7 +65,6 @@ public class LauncherActivity extends AppCompatActivity {
      * Checks if needed permissions by this activity are granted.
      *
      * @return True if all permissions are granted, false if one or more permissions aren't granted yet.
-     *
      * @see <a href="https://developer.android.com/guide/topics/permissions/overview">Permissions overview</a>
      */
     private boolean checkPermissions() {
@@ -92,51 +76,47 @@ public class LauncherActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     * When user finishes the permission granting "process" this method will be called.<br>
+     * If one or more permissions are denied, it will show a dialog explaining why the permissions are needed
+     * and that the app can't work without them.
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        /*if (requestCode == ACCESS_FINE_LOCATION_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Checking again permission to avoid runtime exceptions
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    enableMyLocationAndLocationUpdates(); // Enabling and displaying current location (blue dot on map)
+        if (requestCode == PERMISSIONS_ALL_RC) {
+            // If request is cancelled, the result arrays are empty
+            for (int grantResult : grantResults)
+                if (grantResult == PackageManager.PERMISSION_DENIED) {
+                    // Disable app functionalities because at least one permission was not granted
+                    // TODO: Show permission "rationale" like specified in this method documentation and disable app functionalities
+                    return;
                 }
-            } else {
-                // Permission denied
-                // Functionalities depending by this permission will no longer work
-                Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show();
-            }
-        }*/
-        // TODO: Launch here the NotSubscribedActivity
+
+            // All permissions are granted, starting second activity
+            startSecondActivity();
+        }
+    }
+
+    /**
+     * If the user is subscribed to at least one network, launches the {@link MapActivity},
+     * otherwise it will launch {@link NotSubscribedActivity}.
+     */
+    private void startSecondActivity() {
+        if (isSubscribed())
+            startActivity(new Intent(this, MapActivity.class));
+        else
+            startActivity(new Intent(this, NotSubscribedActivity.class));
+
+        finish(); // Closing this activity because has done its job
     }
 
     /**
      * Checks if the user is subscribed to at least one network.
+     *
      * @return True if the user is subscribed to a network, false otherwise.
      */
     private boolean isSubscribed() {
         return SMSJoinableNetManager.getInstance().getNetSubscriberList().getSubscribers().size() > 0;
-    }
-
-    /**
-     * Setups a new TimerTask watching for new subscribers to current device network every 1000ms.
-     */
-    private void setupSubscribersWatcher() {
-        Timer timer = new Timer();
-        timer.schedule(new SubscribersWatcher(), 0, 1000);
-    }
-
-
-    /**
-     * Gets subscribers list to current device network and prints to the logcat.
-     */
-    class SubscribersWatcher extends TimerTask {
-        /**
-         * Method executed when a new {@link Timer} using {@link SubscribersWatcher} is scheduled.
-         */
-        @Override
-        public void run() {
-            SMSPeer[] subsToNet = SMSJoinableNetManager.getInstance().getNetSubscriberList().getSubscribers().toArray(new SMSPeer[] {});
-            Log.d("NET_DEMO", Arrays.toString(subsToNet));
-        }
     }
 }

@@ -18,14 +18,13 @@ import com.gruppo3.wetravel.R;
 
 
 /**
- * Called when the user is not subscribed and he wants to invite a friend or accept an invitation.
+ * Called when the user is not subscribed to any network and he wants to invite a friend or accept an invitation.<br>
  *
  * @author Riccardo Crociani
  */
-public class FriendsActivity extends AppCompatActivity implements InviteListener<SMSPeer, SMSFailReason> {
+public class FriendsActivity extends AppCompatActivity {
 
     private EditText editTextFriendNumber;
-    private Button mapButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,40 +32,35 @@ public class FriendsActivity extends AppCompatActivity implements InviteListener
         setContentView(R.layout.activity_friends);
 
         editTextFriendNumber = findViewById(R.id.friendNumber); // EditText containing phone number of the user to invite
-        mapButton = (Button) findViewById(R.id.mapButton);
-        mapButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (SMSJoinableNetManager.getInstance().getNetSubscriberList().getSubscribers().size() > 0) {
-                    Intent openMapActivity = new Intent(getApplicationContext(), MapActivity.class);
-                    startActivity(openMapActivity);
-                } else {
-                    Toast.makeText(getApplicationContext(), "You must join a network", Toast.LENGTH_LONG).show();
-                }
+        findViewById(R.id.mapButton).setOnClickListener(v -> {
+            if (SMSJoinableNetManager.getInstance().getNetSubscriberList().getSubscribers().size() > 0) {
+                startActivity(new Intent(getApplicationContext(), MapActivity.class));
+            } else {
+                Toast.makeText(getApplicationContext(), "You must join a network", Toast.LENGTH_LONG).show();
             }
         });
     }
 
+    /**
+     * Sends an invitation to the phone number inserted in {@link #editTextFriendNumber}.<br>
+     * A {@link Toast} will be shown with the result of the operation.
+     */
     public void inviteButton_onClick(View v) {
         try {
             SMSPeer peerToInvite = new SMSPeer(editTextFriendNumber.getText().toString());
-            SMSJoinableNetManager.getInstance().invite(peerToInvite, this);
+            SMSJoinableNetManager.getInstance().invite(peerToInvite, new InviteListener<SMSPeer, SMSFailReason>() {
+                @Override
+                public void onInvitationSent(SMSPeer invitedPeer) {
+                    Toast.makeText(getApplicationContext(), "Invitation sent to " + invitedPeer.getAddress(), Toast.LENGTH_LONG).show();
+                }
+
+                @Override
+                public void onInvitationNotSent(SMSPeer notInvitedPeer, SMSFailReason failReason) {
+                    Toast.makeText(getApplicationContext(), "An error has occurred while sending invite", Toast.LENGTH_LONG).show();
+                }
+            });
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), "Enter a number to invite", Toast.LENGTH_LONG).show();
         }
-    }
-
-    @Override
-    public void onInvitationSent(SMSPeer invitedPeer) {
-        Log.d("NET_DEMO", "Invitation was sent to: " + invitedPeer);
-    }
-
-    @Override
-    public void onInvitationNotSent(SMSPeer notInvitedPeer, SMSFailReason failReason) {
-        Log.e("NET_DEMO", "Invitation was NOT sent to: " + notInvitedPeer + " error was: " + failReason);
-    }
-
-    private SMSPeer buildPeerToInvite(String phoneNumberToInvite) {
-        return new SMSPeer(phoneNumberToInvite);
     }
 }

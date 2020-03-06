@@ -1,16 +1,13 @@
 package com.gruppo3.wetravel.activities;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.eis.communication.network.Invitation;
-import com.eis.communication.network.listeners.JoinInvitationListener;
 import com.eis.smslibrary.SMSPeer;
 import com.eis.smsnetwork.SMSJoinableNetManager;
 import com.gruppo3.wetravel.R;
@@ -49,31 +46,21 @@ public class NotSubscribedActivity extends AppCompatActivity {
     }
 
     /**
-     * Shows a an {@link AlertDialog} requesting the user to accept or decline the received invitation.
+     * Shows an {@link AlertDialog} requesting the user to accept or decline the received invitation.
      *
      * @param invitation A received {@link Invitation<SMSPeer>}.
      */
     private void createDialog(final Invitation<SMSPeer> invitation) {
+        final char SPACE_SEPARATOR = ' ';
         new AlertDialog.Builder(this)
-                .setTitle(invitation.getInviterPeer().getAddress() + INVITED_YOU)
+                .setTitle(invitation.getInviterPeer().getAddress() + SPACE_SEPARATOR + INVITED_YOU)
                 .setMessage(DO_YOU_WANT_TO_JOIN)
                 .setPositiveButton(ACCEPT, (dialog, id) -> {
-                    replyInvitation(invitation);
+                    SMSJoinableNetManager.getInstance().acceptJoinInvitation(invitation); // Accepting the invitation
                     startActivity(new Intent(getApplicationContext(), MapActivity.class));
                 })
                 .setNegativeButton(DECLINE, (dialog, id) -> dialog.cancel())
                 .create()
                 .show();
-
-    }
-
-    /**
-     * Accept the invitation, joins the network and start the {@link MapActivity}.
-     *
-     * @param invitation An {@link Invitation<SMSPeer>} to accept.
-     */
-    private void replyInvitation(Invitation<SMSPeer> invitation) {
-        SMSJoinableNetManager.getInstance().acceptJoinInvitation(invitation); // Accepting the invitation
-        startActivity(new Intent(this, MapActivity.class)); // Starting the map activity
     }
 }

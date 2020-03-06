@@ -1,4 +1,4 @@
-package com.gruppo3.wetravel.mapManager.types;
+package com.gruppo3.wetravel.mapmanager.types;
 
 import androidx.annotation.FloatRange;
 import androidx.annotation.NonNull;

@@ -1,4 +1,4 @@
-package com.gruppo3.wetravel.mapManager.asyncTasks;
+package com.gruppo3.wetravel.mapmanager.asynctasks;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
 
-import com.gruppo3.wetravel.mapManager.DirectionsJSONParser;
+import com.gruppo3.wetravel.mapmanager.DirectionsJSONParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;

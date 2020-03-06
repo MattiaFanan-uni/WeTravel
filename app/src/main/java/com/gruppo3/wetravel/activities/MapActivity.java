@@ -2,17 +2,11 @@ package com.gruppo3.wetravel.activities;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
-import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.util.Preconditions;
 import androidx.fragment.app.FragmentActivity;
 
@@ -31,15 +25,15 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.gruppo3.wetravel.R;
-import com.gruppo3.wetravel.mapManager.DirectionsManager;
-import com.gruppo3.wetravel.mapManager.types.DestinationMarker;
-import com.gruppo3.wetravel.mapManager.types.ViewMap;
+import com.gruppo3.wetravel.mapmanager.DirectionsManager;
+import com.gruppo3.wetravel.mapmanager.types.DestinationMarker;
+import com.gruppo3.wetravel.mapmanager.types.ViewMap;
 
 /**
- * This activity shows a map with device current position and markers for available "missions".<br>
- * To correctly implement a Map view, this class extends {@link FragmentActivity}.<br>
+ * This activity shows a {@link GoogleMap} with device current position and {@link DestinationMarker} for available "missions".<br>
+ * To correctly implement a map view, this class extends {@link FragmentActivity}.<br>
  * <p>
- * This activity needs {@link Manifest.permission#ACCESS_FINE_LOCATION} (or {@link Manifest.permission#ACCESS_COARSE_LOCATION}) permission.
+ * This activity needs {@link Manifest.permission#ACCESS_FINE_LOCATION} or {@link Manifest.permission#ACCESS_COARSE_LOCATION} permission.
  * It also needs Google Play Services installed and this is automatically checked before {@link #onMapReady(GoogleMap)} is being called.<br>
  * <p>
  * When an instance of this class is created, a default {@link ViewMap} object is registered.
@@ -48,9 +42,6 @@ import com.gruppo3.wetravel.mapManager.types.ViewMap;
  * @author Giovanni Barca
  */
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback {
-
-    private final int ACCESS_FINE_LOCATION_REQUEST_CODE = 1; // Request code for ACCESS_FINE_LOCATION permission
-
     private GoogleMap mMap = null; // Main map obj reference
     private FusedLocationProviderClient fusedLocationProviderClient; // Needed for acquiring location updates
     private LocationRequest locationRequest; // Needed for requesting location updates
@@ -67,7 +58,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
      */
     private LocationCallback locationCallback = new LocationCallback() {
         @Override
-        public void onLocationResult(LocationResult locationResult) {
+        public void onLocationResult(@NonNull LocationResult locationResult) {
+            Preconditions.checkNotNull(mMap, "Can't follow current position. Map is set to null.");
+
             Location location = locationResult.getLastLocation();
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .zoom(viewMap.getMapZoom())
@@ -88,15 +81,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         setContentView(R.layout.activity_maps);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        try {
+        SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
+        if (mapFragment != null)
             mapFragment.getMapAsync(this);
-        } catch (NullPointerException e) {
-            Log.d("MapActivity", Log.getStackTraceString(e));
-            finish(); // Closing activity if the map has not been found
-        }
-
-        //checkPermissions(); // Checks (and eventually asks for) permissions needed by this activity
 
         // Gets the Location Provider Client for requesting location updates to
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -115,48 +102,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     }
 
     /**
-     * Checks if needed permissions by this activity are granted and eventually asks them.
-     * If permissions are granted then requests current location updates and shows it on the map with a blue dot.
-     *
-     * @see <a href="https://developer.android.com/guide/topics/permissions/overview">Permissions overview</a>
-     */
-    private void checkPermissions() {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                // Permissions already granted
-                enableMyLocationAndLocationUpdates();  // Enabling and displaying current location (blue dot on map)
-            } else {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, ACCESS_FINE_LOCATION_REQUEST_CODE);
-            }
-        } else {
-            enableMyLocationAndLocationUpdates(); // Enabling and displaying current location (blue dot on map)
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     * Method invoked when the user chooses to grant a permission or not.
-     *
-     * @see FragmentActivity#onRequestPermissionsResult(int, String[], int[])
-     * @see <a href="https://developer.android.com/guide/topics/permissions/overview">Permissions overview</a>
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == ACCESS_FINE_LOCATION_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Checking again permission to avoid runtime exceptions
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    enableMyLocationAndLocationUpdates(); // Enabling and displaying current location (blue dot on map)
-                }
-            } else {
-                // Permission denied
-                // Functionalities depending by this permission will no longer work
-                Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
-    /**
      * This callback is triggered when the map is ready to be used.
      * If Google Play services are not installed on the device, the user will be prompted to install
      * them inside the {@link SupportMapFragment}.
@@ -169,6 +114,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         mMap = googleMap; // Getting the map ready to work (main map on the activity layout)
 
         locationRequest = viewMap.getLocationRequest(); // Gets ViewMap LocationRequest
+        enableMyLocationAndLocationUpdates(); // Enabling MyLocation button and starting following current location
 
         mMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
             /**
@@ -206,7 +152,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
              */
             @Override
             public boolean onMarkerClick(Marker marker) {
-                fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+                if (marker != null)
+                    fusedLocationProviderClient.removeLocationUpdates(locationCallback);
                 return false;
             }
         });
@@ -234,7 +181,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     /**
      * Requests location updates and enables MyLocation (blue dot on the map).
      *
-     * @throws NullPointerException if no {@link FusedLocationProviderClient} is registered nor a map is initialized.
+     * @throws NullPointerException if no {@link FusedLocationProviderClient} is registered nor a {@link #mMap} is initialized.
      */
     private void enableMyLocationAndLocationUpdates() throws NullPointerException {
         Preconditions.checkNotNull(mMap, "Can't enable MyLocation. Map is set to null.");
