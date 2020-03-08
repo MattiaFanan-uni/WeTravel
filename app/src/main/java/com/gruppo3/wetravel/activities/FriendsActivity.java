@@ -32,12 +32,10 @@ public class FriendsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_friends);
 
         editTextFriendNumber = findViewById(R.id.friendNumber); // EditText containing phone number of the user to invite
-        findViewById(R.id.mapButton).setOnClickListener(v -> {
-            if (SMSJoinableNetManager.getInstance().getNetSubscriberList().getSubscribers().size() > 0) {
-                startActivity(new Intent(getApplicationContext(), MapActivity.class));
-            } else {
-                Toast.makeText(getApplicationContext(), "You must join a network", Toast.LENGTH_LONG).show();
-            }
+        mapButton = (Button) findViewById(R.id.mapButton);
+        mapButton.setOnClickListener(v -> {
+            Intent openMapActivity = new Intent(getApplicationContext(), MapActivity.class);
+            startActivity(openMapActivity);
         });
     }
 

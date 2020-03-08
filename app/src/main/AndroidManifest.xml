@@ -23,7 +23,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".activities.LauncherActivity">
+        <activity android:name=".activities.InstructionActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -35,12 +35,13 @@
             android:label="@string/title_activity_not_subscribed"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".activities.MapActivity"
+            android:label="Map"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".activities.FriendsActivity"
             android:label="@string/title_activity_friends"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".activities.MapActivity"
-            android:label="@string/title_activity_maps" />
 
         <service
             android:name="com.eis.smsnetwork.broadcast.BroadcastReceiver"

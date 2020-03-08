@@ -2,10 +2,14 @@ package com.gruppo3.wetravel.activities;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -94,40 +98,15 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         // Gets the Location Provider Client for requesting location updates to
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
-
-        // TODO: Is only a "test"
-        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SMSJoinableNetManager.getInstance().setResource("Ciao", "Wow", new SetResourceListener<String, String, SMSFailReason>() {
-                    @Override
-                    public void onResourceSet(String key, String value) {
-                        Toast.makeText(getApplicationContext(), "Resource set", Toast.LENGTH_LONG).show();
-                    }
-
-                    @Override
-                    public void onResourceSetFail(String key, String value, SMSFailReason reason) {
-                        Toast.makeText(getApplicationContext(), "Resource not set: " + reason.toString(), Toast.LENGTH_LONG).show();
-                    }
-                });
-            }
+        Button friendButton = (Button) findViewById(R.id.friendButton);
+        Button getInvited = (Button) findViewById(R.id.getInvitedButton);
+        friendButton.setOnClickListener(v -> {
+            Intent openFriendsActivity = new Intent(getApplicationContext(), FriendsActivity.class);
+            startActivity(openFriendsActivity);
         });
-
-        findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SMSJoinableNetManager.getInstance().getResource("Ciao", new GetResourceListener<String, String, SMSFailReason>() {
-                    @Override
-                    public void onGetResource(String key, String value) {
-                        Toast.makeText(getApplicationContext(), "Got resource. Key is: " + key + "Value is: " + value, Toast.LENGTH_LONG).show();
-                    }
-
-                    @Override
-                    public void onGetResourceFailed(String key, SMSFailReason reason) {
-                        Toast.makeText(getApplicationContext(), "Can't get resource: " + reason.toString(), Toast.LENGTH_LONG).show();
-                    }
-                });
-            }
+        getInvited.setOnClickListener(v -> {
+            Intent openNotSubscribedActivity = new Intent(getApplicationContext(), NotSubscribedActivity.class);
+            startActivity(openNotSubscribedActivity);
         });
 
     }
