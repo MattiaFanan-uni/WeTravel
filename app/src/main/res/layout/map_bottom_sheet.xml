@@ -24,6 +24,7 @@
             android:layout_width="203dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="#00FFFFFF"
             android:text="Friends" />
 
         <Button
@@ -31,6 +32,7 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="#00FFFFFF"
             android:text="get invited" />
 
     </LinearLayout>

@@ -23,7 +23,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".activities.MapActivity">
+        <activity android:name=".activities.InstructionActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -33,6 +33,10 @@
         <activity
             android:name=".activities.NotSubscribedActivity"
             android:label="@string/title_activity_not_subscribed"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activities.MapActivity"
+            android:label="Map"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.FriendsActivity"
