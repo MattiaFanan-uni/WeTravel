@@ -3,9 +3,11 @@ package com.gruppo3.wetravel.activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -29,6 +31,7 @@ public class NotSubscribedActivity extends AppCompatActivity {
     private static final String DO_YOU_WANT_TO_JOIN = "Do you want to join its network?";
     private static final String ACCEPT = "ACCEPT";
     private static final String DECLINE = "DECLINE";
+    private AnimationDrawable animation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +40,9 @@ public class NotSubscribedActivity extends AppCompatActivity {
 
         // Setting up the listener for incoming invitation
         SMSJoinableNetManager.getInstance().setJoinInvitationListener(invitation -> NotSubscribedActivity.this.runOnUiThread(() -> createDialog(invitation)));
+        ImageView loading = (ImageView)findViewById(R.id.imageView);
+        animation = (AnimationDrawable) loading.getDrawable();
+        animation.start();
     }
 
     /**
