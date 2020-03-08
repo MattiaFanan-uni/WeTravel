@@ -1,4 +1,4 @@
-package com.gruppo3.wetravel.mapmanager;
+package com.gruppo3.wetravel.mapmanager.deprecated;
 
 import android.graphics.Color;
 
@@ -8,8 +8,8 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.gruppo3.wetravel.mapmanager.asynctasks.DownloadTask;
-import com.gruppo3.wetravel.mapmanager.asynctasks.ParserTask;
+import com.gruppo3.wetravel.mapmanager.deprecated.asynctasks.DownloadTask;
+import com.gruppo3.wetravel.mapmanager.deprecated.asynctasks.ParserTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
