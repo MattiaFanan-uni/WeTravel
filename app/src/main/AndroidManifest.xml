@@ -42,8 +42,13 @@
             android:name=".activities.MapActivity"
             android:label="@string/title_activity_maps" />
 
-        <service
+        <!--<service
             android:name="com.eis.smsnetwork.broadcast.BroadcastReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />-->
+        <service
+            android:name=".BroadcastReceiver"
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />

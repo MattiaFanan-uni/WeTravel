@@ -11,13 +11,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.eis.smslibrary.SMSPeer;
+import com.eis.smslibrary.SMSManager;
+import com.eis.smslibrary.SMSMessage;
 import com.eis.smsnetwork.SMSJoinableNetManager;
+import com.gruppo3.wetravel.BroadcastReceiver;
 import com.gruppo3.wetravel.R;
-
-import java.util.Arrays;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * This is the first displayed activity when the app is launched.<br>
@@ -50,6 +48,7 @@ public class LauncherActivity extends AppCompatActivity {
 
         // Setting up SMSJoinableNetManager
         SMSJoinableNetManager.getInstance().setup(this);
+        SMSManager.getInstance().setReceivedListener(BroadcastReceiver.class, getApplicationContext());
 
         // If the user has permissions and is subscribed to at least one network launches the map activity,
         // if he has permissions but isn't subscribed to any network launches the NotSubscribedActivity,

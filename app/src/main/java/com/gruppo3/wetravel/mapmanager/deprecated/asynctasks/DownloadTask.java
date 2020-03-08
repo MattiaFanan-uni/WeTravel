@@ -1,4 +1,4 @@
-package com.gruppo3.wetravel.mapmanager.asynctasks;
+package com.gruppo3.wetravel.mapmanager.deprecated.asynctasks;
 
 import android.os.AsyncTask;
 import android.util.Log;
