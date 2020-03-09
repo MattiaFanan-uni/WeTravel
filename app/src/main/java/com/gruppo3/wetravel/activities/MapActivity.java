@@ -163,6 +163,18 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         findViewById(R.id.getInvitedButton).setOnClickListener(v -> {
             startActivity(new Intent(getApplicationContext(), NotSubscribedActivity.class));
         });
+
+        findViewById(R.id.friendButton).setOnClickListener(v -> {
+            startActivity(new Intent(getApplicationContext(), FriendsActivity.class));
+        });
+
+        findViewById(R.id.getInvitedButton).setOnClickListener(v -> {
+            startActivity(new Intent(getApplicationContext(), NotSubscribedActivity.class));
+        });
+
+        findViewById(R.id.newMissionButton).setOnClickListener(v -> {
+            startActivity(new Intent(getApplicationContext(), AddMarkerActivity.class));
+        });
     }
 
     /**

@@ -33,7 +33,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.InstructionActivity" />
         <activity
             android:name=".activities.NotSubscribedActivity"
             android:label="@string/title_activity_not_subscribed"
@@ -42,6 +41,10 @@
             android:name=".activities.FriendsActivity"
             android:label="@string/title_activity_friends"
             android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity android:name=".activities.InstructionActivity" />
+        <activity android:name=".activities.AddMarkerActivity" />
+        <activity android:name=".activities.MarkerDetailsActivity" />
 
         <!--<service
             android:name="com.eis.smsnetwork.broadcast.BroadcastReceiver"
