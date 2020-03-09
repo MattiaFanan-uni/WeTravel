@@ -59,6 +59,7 @@ public class BroadcastReceiver extends SMSReceivedServiceListener {
      */
     @Override
     public void onMessageReceived(SMSMessage message) {
+        Log.d("MAP_DEMO", "onMessageReceived");
         defaultOnMessageReceived(message);
 
         if (listener != null)

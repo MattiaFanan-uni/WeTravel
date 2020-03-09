@@ -30,8 +30,7 @@ public class FriendsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_friends);
 
         editTextFriendNumber = findViewById(R.id.friendNumber); // EditText containing phone number of the user to invite
-        mapButton = (Button) findViewById(R.id.mapButton);
-        mapButton.setOnClickListener(v -> {
+        findViewById(R.id.mapButton).setOnClickListener(v -> {
             Intent openMapActivity = new Intent(getApplicationContext(), MapActivity.class);
             startActivity(openMapActivity);
         });
