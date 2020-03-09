@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+import android.graphics.Color;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -113,14 +115,24 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         Button friendButton = (Button) findViewById(R.id.friendButton);
-        Button getInvited = (Button) findViewById(R.id.getInvitedButton);
         friendButton.setOnClickListener(v -> {
             Intent openFriendsActivity = new Intent(getApplicationContext(), FriendsActivity.class);
             startActivity(openFriendsActivity);
         });
+
+        Button getInvited = (Button) findViewById(R.id.getInvitedButton);
         getInvited.setOnClickListener(v -> {
             Intent openNotSubscribedActivity = new Intent(getApplicationContext(), NotSubscribedActivity.class);
             startActivity(openNotSubscribedActivity);
+        });
+
+        Button newMissionButton = (Button) findViewById(R.id.newMissionButton);
+        newMissionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent openAddMarkerActivity = new Intent(getApplicationContext(), AddMarkerActivity.class);
+                startActivity(openAddMarkerActivity);
+            }
         });
 
     }
@@ -224,7 +236,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             }
         });
 
-        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+        /*findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 SMSJoinableNetManager.getInstance().setResource("ciao", "45.586760,11.959212,testMarker", new SetResourceListener<String, String, SMSFailReason>() {
@@ -239,7 +251,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                     }
                 });
             }
-        });
+        });*/
 
         BroadcastReceiver.setDelegate(new BroadcastReceiver.OnMessageReceivedListener() {
             @Override
