@@ -1,9 +1,12 @@
 package com.gruppo3.wetravel.mapmanager;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
+import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
@@ -13,6 +16,7 @@ import com.akexorcist.googledirection.constant.TransportMode;
 import com.akexorcist.googledirection.model.Direction;
 import com.akexorcist.googledirection.model.Route;
 import com.akexorcist.googledirection.util.DirectionConverter;
+import com.eis.smsnetwork.SMSJoinableNetManager;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -25,6 +29,8 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.gruppo3.wetravel.R;
 import com.gruppo3.wetravel.activities.AddMarkerActivity;
+import com.gruppo3.wetravel.activities.MapActivity;
+import com.gruppo3.wetravel.activities.MarkerDetailsActivity;
 import com.gruppo3.wetravel.location.LocationManager;
 import com.gruppo3.wetravel.mapmanager.interfaces.MapManagerCallbacks;
 import com.gruppo3.wetravel.mapmanager.types.DestinationMarker;
@@ -32,6 +38,9 @@ import com.gruppo3.wetravel.mapmanager.types.DestinationMarker;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import static androidx.core.content.ContextCompat.getSystemServiceName;
+import static androidx.core.content.ContextCompat.startActivity;
 
 public class MapManager implements MapManagerCallbacks {
     private final int DEFAULT_MAP_ZOOM = 17;
@@ -94,7 +103,11 @@ public class MapManager implements MapManagerCallbacks {
 
     @Override
     public void onMapLongClick(@NonNull LatLng latLng) {
-        addMarker(new DestinationMarker(latLng, activity.getString(R.string.new_mission), BitmapDescriptorFactory.HUE_YELLOW));
+        DestinationMarker marker = new DestinationMarker(latLng, activity.getString(R.string.new_mission), BitmapDescriptorFactory.HUE_YELLOW);
+        addMarker(marker);
+        Intent startAddMarkerActivity = new Intent(activity.getApplicationContext(), AddMarkerActivity.class);
+        activity.startActivity(startAddMarkerActivity);
+
     }
 
     @Override
@@ -112,14 +125,26 @@ public class MapManager implements MapManagerCallbacks {
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-        activity.startActivity(new Intent(activity.getApplicationContext(), AddMarkerActivity.class));
+        activity.startActivity(new Intent(activity.getApplicationContext(), MarkerDetailsActivity.class));
     }
 
     @Override
     public void onInfoWindowLongClick(Marker marker) {
         if (lastRoute != null)
             lastRoute.remove();
-        marker.remove();
+        createDialogToCancelMarker(marker);
+    }
+
+    public void createDialogToCancelMarker(Marker marker) {
+        new AlertDialog.Builder(activity)
+                .setTitle("Do you want to remove the marker?")
+                .setPositiveButton("YES", (dialog, id) -> {
+                    marker.remove();
+                    activity.startActivity(new Intent(activity.getApplicationContext(), MapActivity.class));
+                })
+                .setNegativeButton("NO", (dialog, id) -> dialog.cancel())
+                .create()
+                .show();
     }
 
     /**

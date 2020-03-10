@@ -68,6 +68,8 @@ public class MapActivity extends FragmentActivity {
         mapManager.stopLocationUpdates();
     }
 
+
+
     /**
      * Checks if needed permissions by this activity are granted.
      *

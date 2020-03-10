@@ -21,5 +21,7 @@ public class MarkerDetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_marker_details);
+
+        //TODO Get the details and the location of a marker
     }
 }

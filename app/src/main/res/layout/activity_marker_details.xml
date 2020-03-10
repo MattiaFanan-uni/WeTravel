@@ -44,8 +44,8 @@
 
     <TextView
         android:id="@+id/detailsTextView"
-        android:layout_width="365dp"
-        android:layout_height="138dp"
+        android:layout_width="314dp"
+        android:layout_height="159dp"
         android:text="TextView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -56,26 +56,26 @@
 
     <TextView
         android:id="@+id/peerTextView"
-        android:layout_width="330dp"
+        android:layout_width="279dp"
         android:layout_height="28dp"
         android:text="TextView"
         app:layout_constraintBottom_toTopOf="@+id/detailsTextView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.197"
+        app:layout_constraintHorizontal_bias="0.469"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.458" />
+        app:layout_constraintVertical_bias="0.29" />
 
     <TextView
         android:id="@+id/coordinatesTextView"
-        android:layout_width="330dp"
-        android:layout_height="28dp"
+        android:layout_width="279dp"
+        android:layout_height="30dp"
         android:text="TextView"
         app:layout_constraintBottom_toTopOf="@+id/detailsTextView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.197"
+        app:layout_constraintHorizontal_bias="0.469"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.711" />
+        app:layout_constraintVertical_bias="0.612" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
