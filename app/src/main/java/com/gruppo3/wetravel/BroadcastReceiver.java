@@ -37,6 +37,14 @@ public class BroadcastReceiver extends SMSReceivedServiceListener {
         BroadcastReceiver.listener = listener;
     }
 
+    @Override
+    public void onMessageReceived(SMSMessage message) {
+        defaultOnMessageReceived(message);
+
+        if (listener != null)
+            listener.onMessageReceived(message, request, keys, values);
+    }
+
     /**
      * Receives messages from other peers in the network and acts according to the content of those
      * messages. Messages are composed of different fields, separated by spaces. Spaces escaped with
@@ -57,15 +65,6 @@ public class BroadcastReceiver extends SMSReceivedServiceListener {
      *
      * @param message The message passed by {@link com.eis.smslibrary.SMSReceivedBroadcastReceiver}.
      */
-    @Override
-    public void onMessageReceived(SMSMessage message) {
-        Log.d("MAP_DEMO", "onMessageReceived");
-        defaultOnMessageReceived(message);
-
-        if (listener != null)
-            listener.onMessageReceived(message, request, keys, values);
-    }
-
     private void defaultOnMessageReceived(SMSMessage message) {
         Log.d("BR_RECEIVER", "Message received: " + message.getPeer() + " " + message.getData());
         // To allow FIELD_SEPARATOR in keys and resources, we escape it with a backslash. Therefore
