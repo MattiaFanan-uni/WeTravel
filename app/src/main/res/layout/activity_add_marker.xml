@@ -4,33 +4,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#B2ABC6D5"
     tools:context=".activities.AddMarkerActivity">
 
     <TextView
         android:id="@+id/newMissionTextView"
-        android:layout_width="298dp"
-        android:layout_height="39dp"
-        android:text="Nuova missione"
-        android:textSize="20dp"
+        android:layout_width="294dp"
+        android:layout_height="43dp"
+        android:text="New Mission"
+        android:textColor="#040404"
+        android:textSize="30dp"
+        android:textStyle="bold|italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.372"
+        app:layout_constraintHorizontal_bias="0.363"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.067" />
+        app:layout_constraintVertical_bias="0.172" />
 
     <TextView
         android:id="@+id/locationTextView"
         android:layout_width="296dp"
         android:layout_height="108dp"
-        android:text="Indirizzo"
-        android:textSize="20dp"
+        android:text="Coordinates"
+        android:textSize="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.382"
+        app:layout_constraintHorizontal_bias="0.343"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.162" />
+        app:layout_constraintVertical_bias="0.325" />
 
     <EditText
         android:id="@+id/insertDetailsEditText"
@@ -50,23 +53,40 @@
         android:id="@+id/cancelButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="#31FFFFFF"
         android:text="@android:string/cancel"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.188"
+        app:layout_constraintHorizontal_bias="0.136"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/insertDetailsEditText"
-        app:layout_constraintVertical_bias="0.506" />
+        app:layout_constraintVertical_bias="0.507" />
 
     <Button
         android:id="@+id/sendMissionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="#31FFFFFF"
         android:text="send Mission"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.662"
+        app:layout_constraintHorizontal_bias="0.841"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/insertDetailsEditText"
-        app:layout_constraintVertical_bias="0.506" />
+        app:layout_constraintVertical_bias="0.507" />
+
+    <ImageView
+        android:id="@+id/imageLogo"
+        android:layout_width="131dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#00FFFFFF"
+        android:fadeScrollbars="false"
+        android:src="@drawable/logo"
+        app:layout_constraintBottom_toTopOf="@+id/newMissionTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.441"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
 </androidx.constraintlayout.widget.ConstraintLayout>
