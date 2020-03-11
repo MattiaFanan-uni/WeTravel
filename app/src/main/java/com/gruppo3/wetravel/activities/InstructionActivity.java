@@ -13,10 +13,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.gruppo3.wetravel.R;
+import com.gruppo3.wetravel.util.RequestCode;
 
 public class InstructionActivity extends AppCompatActivity {
-    private static final int PERMISSIONS_ALL_RC = 1; // Permissions request code
-
     /**
      * Application needed permissions.
      */
@@ -36,7 +35,7 @@ public class InstructionActivity extends AppCompatActivity {
         findViewById(R.id.okInstructionButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ActivityCompat.requestPermissions(InstructionActivity.this, PERMISSIONS, PERMISSIONS_ALL_RC);
+                ActivityCompat.requestPermissions(InstructionActivity.this, PERMISSIONS, RequestCode.ALL_PERMISSION);
             }
         });
     }
@@ -49,7 +48,7 @@ public class InstructionActivity extends AppCompatActivity {
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == PERMISSIONS_ALL_RC) {
+        if (requestCode == RequestCode.ALL_PERMISSION) {
             for (int grantResult : grantResults) {
                 if (grantResult == PackageManager.PERMISSION_DENIED) {
                     return; // We exit from this method because nothing can work without permissions (we still display Instruction Activity)

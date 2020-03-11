@@ -42,7 +42,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.gruppo3.wetravel.BroadcastReceiver;
 import com.gruppo3.wetravel.R;
 import com.gruppo3.wetravel.mapmanager.types.DestinationMarker;
-import com.gruppo3.wetravel.mapmanager.types.ViewMap;
 
 import java.util.ArrayList;
 
@@ -60,7 +59,7 @@ import java.util.ArrayList;
  *
  * @author Giovanni Barca
  */
-public class MapActivity extends FragmentActivity implements OnMapReadyCallback {
+public class DeprecatedMapActivity extends FragmentActivity implements OnMapReadyCallback {
     /**
      * A default {@link ViewMap} object is registered to this class.
      * If the user wants to use a custom {@link ViewMap}, he can call {@link #registerViewMap(ViewMap)}. Never null.
@@ -101,7 +100,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
      * @param viewMap Add a {@link ViewMap} to this activity for UI and location customization. Never null.
      */
     public static void registerViewMap(@NonNull ViewMap viewMap) {
-        MapActivity.viewMap = viewMap;
+        /*MapActivity.viewMap = viewMap;*/
     }
 
     /**

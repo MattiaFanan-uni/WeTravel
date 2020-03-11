@@ -18,6 +18,13 @@ import com.eis.smsnetwork.SMSNetDictionary;
 import com.eis.smsnetwork.SMSNetSubscriberList;
 import com.eis.smsnetwork.smsnetcommands.SMSAddPeer;
 
+/**
+ * This class extends {@link SMSReceivedServiceListener} to implement a custom listener when a {@link SMSMessage} is received.
+ *
+ * Note: this class is completely copied from the one developed by group 0 except that is added the possibility to alert a listener set by {@link #setDelegate(OnMessageReceivedListener)}.
+ *
+ * @author Giovanni Barca
+ */
 public class BroadcastReceiver extends SMSReceivedServiceListener {
     private static OnMessageReceivedListener listener;
 

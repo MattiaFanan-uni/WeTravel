@@ -4,6 +4,11 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.gruppo3.wetravel.location.interfaces.OnLocationAvailableListener;
 
+/**
+ * Interface to implement to correctly manage {@link GoogleMap} UI.
+ *
+ * @author Giovanni Barca
+ */
 public interface MapManagerCallbacks extends
         OnMapReadyCallback,
         GoogleMap.OnCameraMoveStartedListener,
@@ -14,6 +19,4 @@ public interface MapManagerCallbacks extends
         GoogleMap.OnInfoWindowLongClickListener,
         OnLocationAvailableListener
 {
-    void startLocationUpdates();
-    void stopLocationUpdates();
 }
