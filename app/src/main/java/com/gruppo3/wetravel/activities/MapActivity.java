@@ -87,7 +87,7 @@ public class MapActivity extends FragmentActivity {
 
         if (requestCode == RequestCode.INSTRUCTION_ACTIVITY) {
             if (resultCode == RESULT_OK) {
-                init();
+                checkAndRequestPermissions();
             }
         }
     }
@@ -98,6 +98,8 @@ public class MapActivity extends FragmentActivity {
     private void checkAndRequestPermissions() {
         if (!checkPermissions())
             startActivityForResult(new Intent(getApplicationContext(), InstructionActivity.class), RequestCode.INSTRUCTION_ACTIVITY);
+        else
+            init();
     }
 
     /**
@@ -123,8 +125,6 @@ public class MapActivity extends FragmentActivity {
      * When this is done, {@link MapManager#onMapReady(GoogleMap)} and {@link MapManager#startLocationUpdates()} are called.
      */
     private void init() {
-        checkAndRequestPermissions(); // We check again permissions to avoid exceptions. The instruction activity is again displayed if permissions are not granted.
-
         SMSJoinableNetManager.getInstance().setup(this); // Setting up SMSJoinableNetManager.
         SMSManager.getInstance().setReceivedListener(BroadcastReceiver.class, getApplicationContext()); // Setting up a received message listener.
 

@@ -68,7 +68,7 @@ public class MapManager implements MapManagerCallbacks {
     private GoogleMap mMap;
     private Location currentLocation;
     private Polyline lastRoute;
-    private boolean updateCamera = true;
+    private boolean updateCamera;
 
     /**
      * When a new instance of this class is created, gets the {@link GoogleMap} associated to the {@link SupportMapFragment} argument
@@ -81,7 +81,6 @@ public class MapManager implements MapManagerCallbacks {
         this.activity = activity;
         mapFragment.getMapAsync(this);
         this.locationManager = new LocationManager(activity.getApplicationContext(), null);
-
     }
 
     /**
@@ -101,6 +100,8 @@ public class MapManager implements MapManagerCallbacks {
         mMap.setOnMapLongClickListener(this); // Called when a long click on the map is made
         mMap.setOnInfoWindowClickListener(this); // Called when the info windows is clicked
         mMap.setOnInfoWindowLongClickListener(this); // Called when a long click on an info window is made
+
+        this.updateCamera = true;
     }
 
     /**
@@ -126,8 +127,7 @@ public class MapManager implements MapManagerCallbacks {
     @Override
     public void onLocationAvailable(@NonNull Location location) {
         this.currentLocation = location;
-        if (updateCamera)
-            animateCamera(location);
+        animateCamera(location);
     }
 
     /**
@@ -189,10 +189,11 @@ public class MapManager implements MapManagerCallbacks {
      */
     @Override
     public boolean onMarkerClick(@NonNull Marker marker) {
+        updateCamera = false;
+
         if (lastRoute != null)
             lastRoute.remove();
 
-        updateCamera = false;
         if (currentLocation != null) {
             activity.runOnUiThread(() -> showRoute(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), marker, TransportMode.DRIVING));
         }
@@ -245,7 +246,7 @@ public class MapManager implements MapManagerCallbacks {
      * If {@link #updateCamera} is true, this method is called and the map moved to have always the current location (blue dot) at center of the screen.
      */
     private void animateCamera(@NonNull Location location) {
-        if (mMap != null) {
+        if (mMap != null && updateCamera) {
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .zoom(DEFAULT_MAP_ZOOM_LEVEL)
                     .target(new LatLng(location.getLatitude(), location.getLongitude()))
