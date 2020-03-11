@@ -167,9 +167,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         findViewById(R.id.newMissionButton).setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), AddMarkerActivity.class)));
     }
 
-    /**
-     * When this activity isn't displayed, suspends location updates to preserve battery and avoid useless operations.
-     */
+
     @Override
     protected void onPause() {
         super.onPause();

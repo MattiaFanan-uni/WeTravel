@@ -22,6 +22,11 @@ public class MapActivity extends FragmentActivity {
 
     private boolean firstRun = true;
 
+    /**
+     * When this activity is created, we immediately check for permissions calling {@link #checkPermissions()}.
+     * If permissions are granted, the map will be shown and user can start interacting with it.
+     * Otherwise a {@link InstructionActivity} is launched to explain and request permissions.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,13 +67,14 @@ public class MapActivity extends FragmentActivity {
         mapManager.updateCamera = true;
     }
 
+    /**
+     * When this activity isn't displayed, suspends location updates to preserve battery and avoid useless operations.
+     */
     @Override
     protected void onPause() {
         super.onPause();
         mapManager.stopLocationUpdates();
     }
-
-
 
     /**
      * Checks if needed permissions by this activity are granted.

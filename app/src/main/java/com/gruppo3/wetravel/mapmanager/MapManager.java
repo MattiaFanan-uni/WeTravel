@@ -101,15 +101,26 @@ public class MapManager implements MapManagerCallbacks {
         return false;
     }
 
+    /**
+     * When a spot on the map is long pressed it is added a marker on that spot and it is started AddMarkerActivity
+     *
+     * @param latLng
+     */
     @Override
     public void onMapLongClick(@NonNull LatLng latLng) {
         DestinationMarker marker = new DestinationMarker(latLng, activity.getString(R.string.new_mission), BitmapDescriptorFactory.HUE_YELLOW);
         addMarker(marker);
         Intent startAddMarkerActivity = new Intent(activity.getApplicationContext(), AddMarkerActivity.class);
+        startAddMarkerActivity.putExtra("latitude", latLng.latitude);
+        startAddMarkerActivity.putExtra("longitude", latLng.longitude);
         activity.startActivity(startAddMarkerActivity);
-
     }
 
+    /**
+     *
+     * @param marker
+     * @return
+     */
     @Override
     public boolean onMarkerClick(@NonNull Marker marker) {
         if (lastRoute != null)
@@ -123,11 +134,21 @@ public class MapManager implements MapManagerCallbacks {
         return false;
     }
 
+    /**
+     * When the info window is clicked it is started MarkerDetailsActivity which shows the details of that marker
+     *
+     * @param marker
+     */
     @Override
     public void onInfoWindowClick(Marker marker) {
         activity.startActivity(new Intent(activity.getApplicationContext(), MarkerDetailsActivity.class));
     }
 
+    /**
+     * When the info window above a marker is long pressed the marker it is called the dialog to delete the marker
+     *
+     * @param marker
+     */
     @Override
     public void onInfoWindowLongClick(Marker marker) {
         if (lastRoute != null)
@@ -135,12 +156,16 @@ public class MapManager implements MapManagerCallbacks {
         createDialogToCancelMarker(marker);
     }
 
+    /**
+     * It creates a dialog to cancel the marker
+     *
+     * @param marker
+     */
     public void createDialogToCancelMarker(Marker marker) {
         new AlertDialog.Builder(activity)
                 .setTitle("Do you want to remove the marker?")
                 .setPositiveButton("YES", (dialog, id) -> {
                     marker.remove();
-                    activity.startActivity(new Intent(activity.getApplicationContext(), MapActivity.class));
                 })
                 .setNegativeButton("NO", (dialog, id) -> dialog.cancel())
                 .create()

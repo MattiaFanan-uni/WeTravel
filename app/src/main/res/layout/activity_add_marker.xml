@@ -20,17 +20,17 @@
         app:layout_constraintVertical_bias="0.067" />
 
     <TextView
-        android:id="@+id/coordinate"
-        android:layout_width="294dp"
-        android:layout_height="44dp"
+        android:id="@+id/locationTextView"
+        android:layout_width="296dp"
+        android:layout_height="108dp"
         android:text="Indirizzo"
         android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.372"
+        app:layout_constraintHorizontal_bias="0.382"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.146" />
+        app:layout_constraintVertical_bias="0.162" />
 
     <EditText
         android:id="@+id/insertDetailsEditText"
@@ -41,10 +41,10 @@
         android:inputType="textPersonName"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.594"
+        app:layout_constraintHorizontal_bias="0.567"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/coordinate"
-        app:layout_constraintVertical_bias="0.086" />
+        app:layout_constraintTop_toBottomOf="@+id/locationTextView"
+        app:layout_constraintVertical_bias="0.173" />
 
     <Button
         android:id="@+id/cancelButton"
