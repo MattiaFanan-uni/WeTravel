@@ -58,6 +58,7 @@ public class MapActivity extends FragmentActivity implements JoinInvitationListe
 
         // UI operations
         findViewById(R.id.friendButton).setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), InviteUserActivity.class)));
+        setTextViewNotSubscribed();
     }
 
     /**
@@ -68,6 +69,7 @@ public class MapActivity extends FragmentActivity implements JoinInvitationListe
         super.onResume();
         if (mapManager != null)
             mapManager.startLocationUpdates();
+        setTextViewNotSubscribed();
     }
 
     /**
@@ -78,6 +80,9 @@ public class MapActivity extends FragmentActivity implements JoinInvitationListe
         return SMSJoinableNetManager.getInstance().getNetSubscriberList().getSubscribers().size() > 0;
     }
 
+    /**
+     * If the user is not subscribed it will be shown a TextView that warn the user to join a Network
+     */
     public void setTextViewNotSubscribed() {
         TextView notSubscribedTextView = (TextView) findViewById(R.id.notSubscribedTextView);
         if (!isSubscribed()) {
@@ -177,6 +182,7 @@ public class MapActivity extends FragmentActivity implements JoinInvitationListe
                 .setMessage(getString(R.string.join_network_question))
                 .setPositiveButton(getString(R.string.accept), (dialog, id) -> {
                     SMSJoinableNetManager.getInstance().acceptJoinInvitation(invitation); // Accepting the invitation
+                    setTextViewNotSubscribed();
                 })
                 .setNegativeButton(getString(R.string.decline), (dialog, id) -> dialog.cancel())
                 .create()

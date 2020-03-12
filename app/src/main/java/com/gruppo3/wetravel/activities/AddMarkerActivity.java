@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.gruppo3.wetravel.R;
@@ -27,7 +28,8 @@ public class AddMarkerActivity extends AppCompatActivity {
         String longitude = String.valueOf(getIntent().getExtras().getDouble(Const.EXTRA_LONGITUDE));
 
         TextView location = findViewById(R.id.locationTextView);
-        location.setText("Coordinates: " + latitude + " " + longitude);
+        location.setText(latitude + " " + longitude);
+        EditText titleEditText = (EditText) findViewById(R.id.titleEditText);
 
         findViewById(R.id.cancelButton).setOnClickListener(v -> {
             setResult(RESULT_CANCELED);
@@ -40,7 +42,7 @@ public class AddMarkerActivity extends AppCompatActivity {
             Intent data = new Intent();
             data.putExtra(Const.EXTRA_LATITUDE, latitude);
             data.putExtra(Const.EXTRA_LONGITUDE, longitude);
-            data.putExtra(Const.EXTRA_TITLE, "title");
+            data.putExtra(Const.EXTRA_TITLE, titleEditText.getText().toString());
             data.putExtra(Const.EXTRA_DETAILS, detailsTextView.getText());
             setResult(RESULT_OK, data);
             finish();

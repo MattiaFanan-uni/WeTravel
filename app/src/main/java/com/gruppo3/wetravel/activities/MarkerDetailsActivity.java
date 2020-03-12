@@ -7,6 +7,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.gruppo3.wetravel.R;
+import com.gruppo3.wetravel.util.Const;
+
+import org.w3c.dom.Text;
 
 public class MarkerDetailsActivity extends AppCompatActivity {
 
@@ -22,6 +25,6 @@ public class MarkerDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_marker_details);
 
-        //TODO Get the details and the location of a marker
+
     }
 }
