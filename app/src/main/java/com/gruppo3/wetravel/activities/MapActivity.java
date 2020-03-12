@@ -3,6 +3,7 @@ package com.gruppo3.wetravel.activities;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -36,6 +37,7 @@ public class MapActivity extends FragmentActivity {
      * Manages all map UI and location retrieving operations.
      */
     private MapManager mapManager;
+    private static final String NOT_SUBSCRIBED = "You are not subscribed to any network";
 
     /**
      * {@inheritDoc}
@@ -54,6 +56,9 @@ public class MapActivity extends FragmentActivity {
         findViewById(R.id.friendButton).setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), FriendsActivity.class)));
         findViewById(R.id.getInvitedButton).setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), NotSubscribedActivity.class)));
         findViewById(R.id.newMissionButton).setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), AddMarkerActivity.class)));
+
+        //Set a text view that warn whether the user is subscribed
+        setTextViewNotSubscribed();
     }
 
     /**
@@ -64,6 +69,22 @@ public class MapActivity extends FragmentActivity {
         super.onResume();
         if (mapManager != null)
             mapManager.startLocationUpdates();
+    }
+
+    /**
+     *
+     * @return boolean True if the user is subscribed to a network
+     */
+    public boolean isSubscribed() {
+        return SMSJoinableNetManager.getInstance().getNetSubscriberList().getSubscribers().size() > 0;
+    }
+
+    public void setTextViewNotSubscribed() {
+        TextView notSubscribedTextView = (TextView) findViewById(R.id.notSubscribedTextView);
+        if (!isSubscribed()) {
+            notSubscribedTextView.setText(NOT_SUBSCRIBED);
+        }
+        else notSubscribedTextView.setText("");
     }
 
     /**

@@ -26,7 +26,7 @@ public class AddMarkerActivity extends AppCompatActivity {
         Double latitude = getIntent().getExtras().getDouble("latitude");
         Double longitude = getIntent().getExtras().getDouble("longitude");
         location = (TextView)findViewById(R.id.locationTextView);
-        location.setText("Coordinate " +String.valueOf(latitude) + " " + String.valueOf(longitude));
+        location.setText(String.valueOf(latitude) + " " + String.valueOf(longitude));
         Button cancelButton = (Button) findViewById(R.id.cancelButton);
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override

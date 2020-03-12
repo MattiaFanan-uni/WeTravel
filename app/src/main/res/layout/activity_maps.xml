@@ -9,7 +9,16 @@
     tools:context=".activities.MapActivity">
 
     <include layout="@layout/map_content" />
+
     <include layout="@layout/map_bottom_sheet" />
+
+    <TextView
+        android:id="@+id/notSubscribedTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#37FFFFFF"
+        android:textSize="20dp"
+        android:textStyle="bold" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

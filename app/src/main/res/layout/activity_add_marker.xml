@@ -12,68 +12,85 @@
         android:layout_width="294dp"
         android:layout_height="43dp"
         android:text="New Mission"
+        android:textAlignment="center"
         android:textColor="#040404"
         android:textSize="30dp"
         android:textStyle="bold|italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.363"
+        app:layout_constraintHorizontal_bias="0.358"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.172" />
+        app:layout_constraintVertical_bias="0.161" />
 
     <TextView
         android:id="@+id/locationTextView"
-        android:layout_width="296dp"
-        android:layout_height="108dp"
-        android:text="Coordinates"
+        android:layout_width="271dp"
+        android:layout_height="49dp"
         android:textSize="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.343"
+        app:layout_constraintHorizontal_bias="0.28"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.325" />
+        app:layout_constraintVertical_bias="0.461" />
+
+    <TextView
+        android:id="@+id/coordinatesTextView"
+        android:layout_width="105dp"
+        android:layout_height="29dp"
+        android:text="Coordinates:"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/locationTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.098"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/newMissionTextView"
+        app:layout_constraintVertical_bias="0.896" />
 
     <EditText
         android:id="@+id/insertDetailsEditText"
-        android:layout_width="337dp"
-        android:layout_height="127dp"
+        android:layout_width="290dp"
+        android:layout_height="121dp"
         android:ems="10"
         android:hint="Details"
         android:inputType="textPersonName"
+        android:singleLine="false"
+        android:textAlignment="viewStart"
+        android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.567"
+        app:layout_constraintHorizontal_bias="0.357"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/locationTextView"
-        app:layout_constraintVertical_bias="0.173" />
+        app:layout_constraintVertical_bias="0.106" />
 
     <Button
         android:id="@+id/cancelButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="112dp"
+        android:layout_height="46dp"
         android:background="#31FFFFFF"
         android:text="@android:string/cancel"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.136"
+        app:layout_constraintHorizontal_bias="0.235"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/insertDetailsEditText"
-        app:layout_constraintVertical_bias="0.507" />
+        app:layout_constraintVertical_bias="0.505" />
 
     <Button
         android:id="@+id/sendMissionButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="112dp"
+        android:layout_height="46dp"
         android:background="#31FFFFFF"
         android:text="send Mission"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.841"
+        app:layout_constraintHorizontal_bias="0.752"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/insertDetailsEditText"
-        app:layout_constraintVertical_bias="0.507" />
+        app:layout_constraintVertical_bias="0.515" />
 
     <ImageView
         android:id="@+id/imageLogo"
@@ -89,4 +106,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="286dp"
+        android:layout_height="43dp"
+        android:ems="10"
+        android:hint="Title"
+        android:inputType="textPersonName"
+        android:textSize="18dp"
+        app:layout_constraintBottom_toTopOf="@+id/locationTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.315"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/newMissionTextView"
+        app:layout_constraintVertical_bias="0.206" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
