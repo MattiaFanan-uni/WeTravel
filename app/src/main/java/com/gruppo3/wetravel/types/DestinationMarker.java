@@ -1,4 +1,4 @@
-package com.gruppo3.wetravel.mapmanager.types;
+package com.gruppo3.wetravel.types;
 
 import androidx.annotation.FloatRange;
 import androidx.annotation.NonNull;
@@ -22,6 +22,7 @@ public class DestinationMarker {
     private Object object = null;
     @FloatRange(from = 0, to = 360, toInclusive = false)
     private float color;
+    private int index = -1;
 
     /**
      * @param latLng {@link LatLng} object containing coordinates where to place the marker. Never null.
@@ -70,6 +71,15 @@ public class DestinationMarker {
     }
 
     /**
+     * Sets an index for this marker.
+     *
+     *  @param index Integer value representing an index. Should be unique.
+     */
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    /**
      * Gets a {@link LatLng} object indicating coordinates of this marker.
      *
      * @return {@link LatLng} object indicating coordinates of this marker. Never null.
@@ -107,5 +117,14 @@ public class DestinationMarker {
     @Nullable
     public Object getObject() {
         return object;
+    }
+
+    /**
+     * Gets the index associated to this marker.
+     *
+     * @return An integer value representing the index associated to this marker. -1 if no index is set.
+     */
+    public int getIndex() {
+        return index;
     }
 }

@@ -5,15 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 
 import com.gruppo3.wetravel.R;
-import com.gruppo3.wetravel.util.RequestCode;
+import com.gruppo3.wetravel.util.Const;
 
 public class InstructionActivity extends AppCompatActivity {
     /**
@@ -35,7 +32,7 @@ public class InstructionActivity extends AppCompatActivity {
         findViewById(R.id.okInstructionButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ActivityCompat.requestPermissions(InstructionActivity.this, PERMISSIONS, RequestCode.ALL_PERMISSION);
+                ActivityCompat.requestPermissions(InstructionActivity.this, PERMISSIONS, Const.ALL_PERMISSION);
             }
         });
     }
@@ -48,7 +45,7 @@ public class InstructionActivity extends AppCompatActivity {
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == RequestCode.ALL_PERMISSION) {
+        if (requestCode == Const.ALL_PERMISSION) {
             for (int grantResult : grantResults) {
                 if (grantResult == PackageManager.PERMISSION_DENIED) {
                     return; // We exit from this method because nothing can work without permissions (we still display Instruction Activity)

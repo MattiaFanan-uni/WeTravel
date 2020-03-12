@@ -1,4 +1,4 @@
-package com.gruppo3.wetravel.location.interfaces;
+package com.gruppo3.wetravel.locationmanager.interfaces;
 
 import androidx.annotation.Nullable;
 

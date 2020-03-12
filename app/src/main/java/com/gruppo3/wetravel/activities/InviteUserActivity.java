@@ -20,7 +20,7 @@ import com.gruppo3.wetravel.R;
  *
  * @author Riccardo Crociani
  */
-public class FriendsActivity extends AppCompatActivity {
+public class InviteUserActivity extends AppCompatActivity {
 
     private EditText editTextFriendNumber;
 
@@ -30,10 +30,7 @@ public class FriendsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_friends);
 
         editTextFriendNumber = findViewById(R.id.friendNumber); // EditText containing phone number of the user to invite
-        findViewById(R.id.mapButton).setOnClickListener(v -> {
-            Intent openMapActivity = new Intent(getApplicationContext(), MapActivity.class);
-            startActivity(openMapActivity);
-        });
+        findViewById(R.id.mapButton).setOnClickListener(v -> finish());
     }
 
     /**

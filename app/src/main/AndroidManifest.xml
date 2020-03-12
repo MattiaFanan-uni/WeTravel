@@ -34,11 +34,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.NotSubscribedActivity"
-            android:label="@string/title_activity_not_subscribed"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".activities.FriendsActivity"
+            android:name=".activities.InviteUserActivity"
             android:label="@string/title_activity_friends"
             android:theme="@style/AppTheme.NoActionBar" />
 

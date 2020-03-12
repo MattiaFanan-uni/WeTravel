@@ -24,15 +24,18 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
-import com.gruppo3.wetravel.R;
 import com.gruppo3.wetravel.activities.AddMarkerActivity;
 import com.gruppo3.wetravel.activities.MarkerDetailsActivity;
-import com.gruppo3.wetravel.location.LocationManager;
-import com.gruppo3.wetravel.location.interfaces.OnLocationAvailableListener;
+import com.gruppo3.wetravel.locationmanager.LocationManager;
+import com.gruppo3.wetravel.locationmanager.interfaces.OnLocationAvailableListener;
 import com.gruppo3.wetravel.mapmanager.interfaces.MapManagerCallbacks;
-import com.gruppo3.wetravel.mapmanager.types.DestinationMarker;
+import com.gruppo3.wetravel.missionmanager.MissionManager;
+import com.gruppo3.wetravel.types.DestinationMarker;
+import com.gruppo3.wetravel.util.Const;
 
 import java.util.ArrayList;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * This class manages map UI with relative listeners:
@@ -65,6 +68,7 @@ public class MapManager implements MapManagerCallbacks {
     private Activity activity;
     @NonNull
     private LocationManager locationManager;
+    private MissionManager missionManager;
     private GoogleMap mMap;
     private Location currentLocation;
     private Polyline lastRoute;
@@ -79,8 +83,10 @@ public class MapManager implements MapManagerCallbacks {
      */
     public MapManager(@NonNull Activity activity, @NonNull SupportMapFragment mapFragment) {
         this.activity = activity;
-        mapFragment.getMapAsync(this);
         this.locationManager = new LocationManager(activity.getApplicationContext(), null);
+        this.missionManager = new MissionManager(this, activity);
+
+        mapFragment.getMapAsync(this);
     }
 
     /**
@@ -102,6 +108,27 @@ public class MapManager implements MapManagerCallbacks {
         mMap.setOnInfoWindowLongClickListener(this); // Called when a long click on an info window is made
 
         this.updateCamera = true;
+    }
+
+    /**
+     * This listener is called when an {@link Activity} is closed.
+     */
+    @SuppressWarnings("ConstantConditions")
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case (Const.ADD_MARKER_ACTIVITY):
+                if (resultCode == RESULT_OK && data != null) {
+                    double latitude = Double.parseDouble(data.getStringExtra(Const.EXTRA_LATITUDE));
+                    double longitude = Double.parseDouble(data.getStringExtra(Const.EXTRA_LONGITUDE));
+                    String title = data.getStringExtra(Const.EXTRA_TITLE);
+                    String details = data.getStringExtra(Const.EXTRA_DETAILS);
+                    DestinationMarker missionMarker = new DestinationMarker(new LatLng(latitude, longitude), title, BitmapDescriptorFactory.HUE_BLUE, details);
+
+                    missionManager.addMission(missionMarker);
+                }
+            break;
+        }
+
     }
 
     /**
@@ -127,7 +154,8 @@ public class MapManager implements MapManagerCallbacks {
     @Override
     public void onLocationAvailable(@NonNull Location location) {
         this.currentLocation = location;
-        animateCamera(location);
+        if (updateCamera)
+            animateCamera(location);
     }
 
     /**
@@ -168,15 +196,11 @@ public class MapManager implements MapManagerCallbacks {
      */
     @Override
     public void onMapLongClick(@NonNull LatLng latLng) {
-        // Creating and adding a DestinationMarker in the map
-        DestinationMarker marker = new DestinationMarker(latLng, activity.getString(R.string.new_mission), DEFAULT_TEMP_MARKER);
-        addMarker(marker);
-
         // Opening AddMarkerActivity to insert mission details
         Intent startAddMarkerActivity = new Intent(activity.getApplicationContext(), AddMarkerActivity.class);
-        startAddMarkerActivity.putExtra("latitude", latLng.latitude);
-        startAddMarkerActivity.putExtra("longitude", latLng.longitude);
-        activity.startActivity(startAddMarkerActivity);
+        startAddMarkerActivity.putExtra(Const.EXTRA_LATITUDE, latLng.latitude);
+        startAddMarkerActivity.putExtra(Const.EXTRA_LONGITUDE, latLng.longitude);
+        activity.startActivityForResult(startAddMarkerActivity, Const.ADD_MARKER_ACTIVITY);
     }
 
     /**
@@ -246,7 +270,7 @@ public class MapManager implements MapManagerCallbacks {
      * If {@link #updateCamera} is true, this method is called and the map moved to have always the current location (blue dot) at center of the screen.
      */
     private void animateCamera(@NonNull Location location) {
-        if (mMap != null && updateCamera) {
+        if (mMap != null) {
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .zoom(DEFAULT_MAP_ZOOM_LEVEL)
                     .target(new LatLng(location.getLatitude(), location.getLongitude()))
@@ -262,7 +286,7 @@ public class MapManager implements MapManagerCallbacks {
      * @param destinationMarker {@link DestinationMarker} object containing information about the marker to be added. Never null.
      * @throws NullPointerException if map has not been yet initialised.
      */
-    private void addMarker(@NonNull DestinationMarker destinationMarker) throws NullPointerException {
+    public void addMarker(@NonNull DestinationMarker destinationMarker) throws NullPointerException {
         if (mMap == null)
             throw new NullPointerException("Can't add markers. Map is null.");
 
@@ -298,7 +322,7 @@ public class MapManager implements MapManagerCallbacks {
                                     LatLng northeastCoordination = route.getBound().getNortheastCoordination().getCoordination();
                                     LatLngBounds bounds = new LatLngBounds(southwestCoordination, northeastCoordination);
                                     Polyline polyline = mMap.addPolyline(DirectionConverter.createPolyline(activity.getApplicationContext(), directionPoint, 5, Color.BLUE));
-                                    mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
+                                    mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 300));
                                     lastRoute = polyline;
                                 });
                             }

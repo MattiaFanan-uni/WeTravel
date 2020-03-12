@@ -1,4 +1,4 @@
-package com.gruppo3.wetravel.location;
+package com.gruppo3.wetravel.locationmanager;
 
 import android.content.Context;
 import android.os.Looper;
@@ -12,8 +12,8 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.gruppo3.wetravel.location.interfaces.LocationManagerInterface;
-import com.gruppo3.wetravel.location.interfaces.OnLocationAvailableListener;
+import com.gruppo3.wetravel.locationmanager.interfaces.LocationManagerInterface;
+import com.gruppo3.wetravel.locationmanager.interfaces.OnLocationAvailableListener;
 
 /**
  * This class manages location services and sends location updates to a method delegated via {@link #setOnLocationAvailableListener(OnLocationAvailableListener)}.
