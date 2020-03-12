@@ -32,15 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="#00FFFFFF"
-            android:text="Friends" />
-
-        <Button
-            android:id="@+id/getInvitedButton"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="#00FFFFFF"
-            android:text="get invited" />
+            android:text="New network" />
 
         <Button
             android:id="@+id/newMissionButton"

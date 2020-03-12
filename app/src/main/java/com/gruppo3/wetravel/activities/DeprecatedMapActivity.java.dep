@@ -41,7 +41,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.gruppo3.wetravel.BroadcastReceiver;
 import com.gruppo3.wetravel.R;
-import com.gruppo3.wetravel.mapmanager.types.DestinationMarker;
+import com.gruppo3.wetravel.types.DestinationMarker;
 
 import java.util.ArrayList;
 

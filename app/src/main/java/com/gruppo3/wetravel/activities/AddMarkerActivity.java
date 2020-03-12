@@ -4,43 +4,46 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.gruppo3.wetravel.R;
-import com.gruppo3.wetravel.mapmanager.types.DestinationMarker;
+import com.gruppo3.wetravel.util.Const;
 
 public class AddMarkerActivity extends AppCompatActivity {
 
-    private TextView location;
+    String latitude;
+    String longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_marker);
 
-        //LatLng coordinate = getIntent().getExtras().getParcelable("COORDINATE");
-        Double latitude = getIntent().getExtras().getDouble("latitude");
-        Double longitude = getIntent().getExtras().getDouble("longitude");
-        location = (TextView)findViewById(R.id.locationTextView);
-        location.setText(String.valueOf(latitude) + " " + String.valueOf(longitude));
-        Button cancelButton = (Button) findViewById(R.id.cancelButton);
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
+        Bundle extras = getIntent().getExtras();
+        if (extras == null)
+            throw new RuntimeException("Can't get new mission coordinates. Extras bundle is null");
+
+        String latitude = String.valueOf(getIntent().getExtras().getDouble(Const.EXTRA_LATITUDE));
+        String longitude = String.valueOf(getIntent().getExtras().getDouble(Const.EXTRA_LONGITUDE));
+
+        TextView location = findViewById(R.id.locationTextView);
+        location.setText("Coordinates: " + latitude + " " + longitude);
+
+        findViewById(R.id.cancelButton).setOnClickListener(v -> {
+            setResult(RESULT_CANCELED);
+            finish();
         });
 
-        Button sendMission = (Button) findViewById(R.id.sendMissionButton);
-        sendMission.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //TODO inviare la missione
-            }
+        findViewById(R.id.sendMissionButton).setOnClickListener(v -> {
+            TextView detailsTextView = findViewById(R.id.insertDetailsEditText);
+
+            Intent data = new Intent();
+            data.putExtra(Const.EXTRA_LATITUDE, latitude);
+            data.putExtra(Const.EXTRA_LONGITUDE, longitude);
+            data.putExtra(Const.EXTRA_TITLE, "title");
+            data.putExtra(Const.EXTRA_DETAILS, detailsTextView.getText());
+            setResult(RESULT_OK, data);
+            finish();
         });
     }
 }

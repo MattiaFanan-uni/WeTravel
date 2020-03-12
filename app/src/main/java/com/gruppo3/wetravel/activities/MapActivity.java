@@ -1,5 +1,6 @@
 package com.gruppo3.wetravel.activities;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -8,7 +9,10 @@ import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import com.eis.communication.network.Invitation;
+import com.eis.communication.network.listeners.JoinInvitationListener;
 import com.eis.smslibrary.SMSManager;
+import com.eis.smslibrary.SMSPeer;
 import com.eis.smsnetwork.SMSJoinableNetManager;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -16,8 +20,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.gruppo3.wetravel.BroadcastReceiver;
 import com.gruppo3.wetravel.R;
 import com.gruppo3.wetravel.mapmanager.MapManager;
-import com.gruppo3.wetravel.mapmanager.types.DestinationMarker;
-import com.gruppo3.wetravel.util.RequestCode;
+import com.gruppo3.wetravel.types.DestinationMarker;
+import com.gruppo3.wetravel.util.Const;
 
 /**
  * This activity shows a {@link GoogleMap} with device current location and {@link DestinationMarker DestinationMarkers} for available missions.
@@ -32,7 +36,7 @@ import com.gruppo3.wetravel.util.RequestCode;
  *
  * @author Giovanni Barca
  */
-public class MapActivity extends FragmentActivity {
+public class MapActivity extends FragmentActivity implements JoinInvitationListener<Invitation<SMSPeer>> {
     /**
      * Manages all map UI and location retrieving operations.
      */
@@ -52,13 +56,8 @@ public class MapActivity extends FragmentActivity {
 
         checkAndRequestPermissions(); // Checking and requesting permissions
 
-        // Associating activity opening to each button
-        findViewById(R.id.friendButton).setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), FriendsActivity.class)));
-        findViewById(R.id.getInvitedButton).setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), NotSubscribedActivity.class)));
-        findViewById(R.id.newMissionButton).setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), AddMarkerActivity.class)));
-
-        //Set a text view that warn whether the user is subscribed
-        setTextViewNotSubscribed();
+        // UI operations
+        findViewById(R.id.friendButton).setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), InviteUserActivity.class)));
     }
 
     /**
@@ -106,11 +105,19 @@ public class MapActivity extends FragmentActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == RequestCode.INSTRUCTION_ACTIVITY) {
+        if (requestCode == Const.INSTRUCTION_ACTIVITY) {
             if (resultCode == RESULT_OK) {
                 checkAndRequestPermissions();
             }
         }
+
+        if (mapManager != null)
+            mapManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onJoinInvitationReceived(Invitation invitation) {
+        runOnUiThread(() -> displayNewInvitationDialog(invitation));
     }
 
     /**
@@ -118,7 +125,7 @@ public class MapActivity extends FragmentActivity {
      */
     private void checkAndRequestPermissions() {
         if (!checkPermissions())
-            startActivityForResult(new Intent(getApplicationContext(), InstructionActivity.class), RequestCode.INSTRUCTION_ACTIVITY);
+            startActivityForResult(new Intent(getApplicationContext(), InstructionActivity.class), Const.INSTRUCTION_ACTIVITY);
         else
             init();
     }
@@ -147,6 +154,8 @@ public class MapActivity extends FragmentActivity {
      */
     private void init() {
         SMSJoinableNetManager.getInstance().setup(this); // Setting up SMSJoinableNetManager.
+        SMSJoinableNetManager.getInstance().setJoinInvitationListener(this);
+
         SMSManager.getInstance().setReceivedListener(BroadcastReceiver.class, getApplicationContext()); // Setting up a received message listener.
 
         SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
@@ -154,5 +163,23 @@ public class MapActivity extends FragmentActivity {
             mapManager = new MapManager(this, mapFragment);
             mapManager.startLocationUpdates();
         }
+    }
+
+    /**
+     * Shows an {@link AlertDialog} requesting the user to accept or decline the received invitation.
+     *
+     * @param invitation A received {@link Invitation<SMSPeer>}.
+     */
+    private void displayNewInvitationDialog(final Invitation<SMSPeer> invitation) {
+        final char SPACE_SEPARATOR = ' ';
+        new AlertDialog.Builder(this)
+                .setTitle(invitation.getInviterPeer().getAddress() + SPACE_SEPARATOR + getString(R.string.invited_you))
+                .setMessage(getString(R.string.join_network_question))
+                .setPositiveButton(getString(R.string.accept), (dialog, id) -> {
+                    SMSJoinableNetManager.getInstance().acceptJoinInvitation(invitation); // Accepting the invitation
+                })
+                .setNegativeButton(getString(R.string.decline), (dialog, id) -> dialog.cancel())
+                .create()
+                .show();
     }
 }
