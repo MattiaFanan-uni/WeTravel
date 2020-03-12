@@ -182,6 +182,7 @@ public class BroadcastReceiver extends SMSReceivedServiceListener {
             case RemoveResource: {
                 if (senderIsNotSubscriber) return;
                 try {
+                    keys = fields;
                     for (int i = NUM_OF_REQUEST_FIELDS; i < fields.length; i++)
                         dictionary.removeResourceFromSMS(fields[i]);
                 } catch (ArrayIndexOutOfBoundsException e) {

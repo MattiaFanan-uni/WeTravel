@@ -32,4 +32,6 @@ public class Const {
     public static final int INSTRUCTION_ACTIVITY = 100;
 
     public static final int ADD_MARKER_ACTIVITY = 101;
+
+    public static final int INVITE_USER_ACTIVITY = 102;
 }

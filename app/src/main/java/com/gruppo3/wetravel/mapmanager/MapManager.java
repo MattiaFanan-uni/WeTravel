@@ -122,8 +122,8 @@ public class MapManager implements MapManagerCallbacks {
                     double longitude = Double.parseDouble(data.getStringExtra(Const.EXTRA_LONGITUDE));
                     String title = data.getStringExtra(Const.EXTRA_TITLE);
                     String details = data.getStringExtra(Const.EXTRA_DETAILS);
-                    DestinationMarker missionMarker = new DestinationMarker(new LatLng(latitude, longitude), title, BitmapDescriptorFactory.HUE_BLUE, details);
 
+                    DestinationMarker missionMarker = new DestinationMarker(new LatLng(latitude, longitude), title, BitmapDescriptorFactory.HUE_BLUE, details);
                     missionManager.addMission(missionMarker);
                 }
             break;
@@ -247,6 +247,7 @@ public class MapManager implements MapManagerCallbacks {
     public void onInfoWindowLongClick(@NonNull Marker marker) {
         if (lastRoute != null)
             lastRoute.remove();
+
         createDialogToCancelMarker(marker);
     }
 
@@ -259,6 +260,8 @@ public class MapManager implements MapManagerCallbacks {
         new AlertDialog.Builder(activity)
                 .setTitle("Do you want to remove the marker?")
                 .setPositiveButton("YES", (dialog, id) -> {
+                    DestinationMarker destinationMarker = (DestinationMarker)marker.getTag();
+                    missionManager.removeMission(destinationMarker);
                     marker.remove();
                 })
                 .setNegativeButton("NO", (dialog, id) -> dialog.cancel())
@@ -286,15 +289,18 @@ public class MapManager implements MapManagerCallbacks {
      * @param destinationMarker {@link DestinationMarker} object containing information about the marker to be added. Never null.
      * @throws NullPointerException if map has not been yet initialised.
      */
-    public void addMarker(@NonNull DestinationMarker destinationMarker) throws NullPointerException {
+    public Marker addMarker(@NonNull DestinationMarker destinationMarker) throws NullPointerException {
         if (mMap == null)
             throw new NullPointerException("Can't add markers. Map is null.");
 
-        mMap.addMarker(new MarkerOptions()
+
+        Marker marker = mMap.addMarker(new MarkerOptions()
                 .position(destinationMarker.getLatLng())
                 .title(destinationMarker.getTitle())
-                .icon(BitmapDescriptorFactory.defaultMarker(destinationMarker.getColor()))
-        ).setTag(destinationMarker.getObject());
+                .icon(BitmapDescriptorFactory.defaultMarker(destinationMarker.getColor())));
+        marker.setTag(destinationMarker);
+
+        return marker;
     }
 
     /**

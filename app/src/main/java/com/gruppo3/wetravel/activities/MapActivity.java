@@ -57,7 +57,7 @@ public class MapActivity extends FragmentActivity implements JoinInvitationListe
         checkAndRequestPermissions(); // Checking and requesting permissions
 
         // UI operations
-        findViewById(R.id.friendButton).setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), InviteUserActivity.class)));
+        findViewById(R.id.friendButton).setOnClickListener(v -> startActivityForResult(new Intent(getApplicationContext(), InviteUserActivity.class), Const.INVITE_USER_ACTIVITY));
         setTextViewNotSubscribed();
     }
 
@@ -110,10 +110,15 @@ public class MapActivity extends FragmentActivity implements JoinInvitationListe
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == Const.INSTRUCTION_ACTIVITY) {
-            if (resultCode == RESULT_OK) {
-                checkAndRequestPermissions();
-            }
+        switch (requestCode) {
+            case Const.INSTRUCTION_ACTIVITY:
+                if (resultCode == RESULT_OK)
+                    checkAndRequestPermissions();
+                break;
+
+            case Const.INVITE_USER_ACTIVITY:
+                setTextViewNotSubscribed();
+                break;
         }
 
         if (mapManager != null)
