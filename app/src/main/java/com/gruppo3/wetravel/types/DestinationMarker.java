@@ -25,6 +25,8 @@ public class DestinationMarker {
     private float color;
     private int index = -1;
 
+    public boolean owned;
+
     /**
      * @param latLng {@link LatLng} object containing coordinates where to place the marker. Never null.
      * @param title  String to show when user clicks on the marker (it's showed in a popup over the marker). Never null.

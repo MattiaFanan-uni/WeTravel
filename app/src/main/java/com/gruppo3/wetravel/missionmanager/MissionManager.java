@@ -44,6 +44,7 @@ public class MissionManager implements BroadcastReceiver.OnMessageReceivedListen
 
                 DestinationMarker destinationMarker = new DestinationMarker(new LatLng(Double.parseDouble(parameters[1]), Double.parseDouble(parameters[2])), parameters[3], parameters[4]);
                 destinationMarker.setIndex(resourceCounter);
+                destinationMarker.owned = false;
                 activity.runOnUiThread(() -> markers.put(String.valueOf(destinationMarker.getIndex()), mapManager.addMarker(destinationMarker)));
             }
         }

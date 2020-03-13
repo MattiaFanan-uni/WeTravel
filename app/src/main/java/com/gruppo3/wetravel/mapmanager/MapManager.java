@@ -14,6 +14,7 @@ import com.akexorcist.googledirection.constant.TransportMode;
 import com.akexorcist.googledirection.model.Direction;
 import com.akexorcist.googledirection.model.Route;
 import com.akexorcist.googledirection.util.DirectionConverter;
+import com.eis.smsnetwork.SMSJoinableNetManager;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -58,11 +59,6 @@ public class MapManager implements MapManagerCallbacks {
      * {@link GoogleMap} zoom level used by default.
      */
     private static final int DEFAULT_MAP_ZOOM_LEVEL = 17;
-
-    /**
-     * Default color when a {@link DestinationMarker} is just inserted and not yet confirmed.
-     */
-    private static final float DEFAULT_TEMP_MARKER = BitmapDescriptorFactory.HUE_YELLOW;
 
     @NonNull
     private Activity activity;
@@ -124,6 +120,7 @@ public class MapManager implements MapManagerCallbacks {
                     String details = data.getStringExtra(Const.EXTRA_DETAILS);
 
                     DestinationMarker missionMarker = new DestinationMarker(new LatLng(latitude, longitude), title, BitmapDescriptorFactory.HUE_BLUE, details);
+                    missionMarker.owned = true;
                     missionManager.addMission(missionMarker);
                 }
             break;
@@ -190,17 +187,19 @@ public class MapManager implements MapManagerCallbacks {
 
     /**
      * This listener is called when a long press is made on the {@link GoogleMap map}.
-     * Adds a {@value DEFAULT_TEMP_MARKER} {@link DestinationMarker} on the clicked spot and starts {@link AddMarkerActivity}.
+     * Adds a {@link DestinationMarker} on the clicked spot and starts {@link AddMarkerActivity}.
      *
      * @param latLng Coordinates of clicked spot on the {@link GoogleMap}. Never null.
      */
     @Override
     public void onMapLongClick(@NonNull LatLng latLng) {
         // Opening AddMarkerActivity to insert mission details
-        Intent startAddMarkerActivity = new Intent(activity.getApplicationContext(), AddMarkerActivity.class);
-        startAddMarkerActivity.putExtra(Const.EXTRA_LATITUDE, latLng.latitude);
-        startAddMarkerActivity.putExtra(Const.EXTRA_LONGITUDE, latLng.longitude);
-        activity.startActivityForResult(startAddMarkerActivity, Const.ADD_MARKER_ACTIVITY);
+        if (SMSJoinableNetManager.getInstance().getNetSubscriberList().getSubscribers().size() > 0) {
+            Intent startAddMarkerActivity = new Intent(activity.getApplicationContext(), AddMarkerActivity.class);
+            startAddMarkerActivity.putExtra(Const.EXTRA_LATITUDE, latLng.latitude);
+            startAddMarkerActivity.putExtra(Const.EXTRA_LONGITUDE, latLng.longitude);
+            activity.startActivityForResult(startAddMarkerActivity, Const.ADD_MARKER_ACTIVITY);
+        }
     }
 
     /**
@@ -233,7 +232,17 @@ public class MapManager implements MapManagerCallbacks {
      */
     @Override
     public void onInfoWindowClick(@NonNull Marker marker) {
-        activity.startActivity(new Intent(activity.getApplicationContext(), MarkerDetailsActivity.class));
+        DestinationMarker destinationMarker = (DestinationMarker)marker.getTag();
+        if (destinationMarker != null && destinationMarker.getObject() != null) {
+            String details = (String) destinationMarker.getObject();
+
+            Intent intentMarkerDetailsActivity = new Intent(activity.getApplicationContext(), MarkerDetailsActivity.class);
+            intentMarkerDetailsActivity.putExtra(Const.EXTRA_LATITUDE, String.valueOf(marker.getPosition().latitude));
+            intentMarkerDetailsActivity.putExtra(Const.EXTRA_LONGITUDE, String.valueOf(marker.getPosition().longitude));
+            intentMarkerDetailsActivity.putExtra(Const.EXTRA_TITLE, marker.getTitle());
+            intentMarkerDetailsActivity.putExtra(Const.EXTRA_DETAILS, details);
+            activity.startActivity(intentMarkerDetailsActivity);
+        }
     }
 
     /**
@@ -245,10 +254,12 @@ public class MapManager implements MapManagerCallbacks {
      */
     @Override
     public void onInfoWindowLongClick(@NonNull Marker marker) {
-        if (lastRoute != null)
-            lastRoute.remove();
-
-        createDialogToCancelMarker(marker);
+        DestinationMarker destinationMarker = (DestinationMarker)marker.getTag();
+        if (destinationMarker != null && destinationMarker.owned) {
+            if (lastRoute != null)
+                lastRoute.remove();
+            createDialogToCancelMarker(marker);
+        }
     }
 
     /**
@@ -261,8 +272,10 @@ public class MapManager implements MapManagerCallbacks {
                 .setTitle("Do you want to remove the marker?")
                 .setPositiveButton("YES", (dialog, id) -> {
                     DestinationMarker destinationMarker = (DestinationMarker)marker.getTag();
-                    missionManager.removeMission(destinationMarker);
-                    marker.remove();
+                    if (destinationMarker != null) {
+                        missionManager.removeMission(destinationMarker);
+                        marker.remove();
+                    }
                 })
                 .setNegativeButton("NO", (dialog, id) -> dialog.cancel())
                 .create()

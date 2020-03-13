@@ -37,15 +37,19 @@ public class AddMarkerActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.sendMissionButton).setOnClickListener(v -> {
-            TextView detailsTextView = findViewById(R.id.insertDetailsEditText);
+            if (titleEditText.getText().toString().equals(""))
+                titleEditText.setError("Title is required!");
+            else {
+                TextView detailsTextView = findViewById(R.id.insertDetailsEditText);
 
-            Intent data = new Intent();
-            data.putExtra(Const.EXTRA_LATITUDE, latitude);
-            data.putExtra(Const.EXTRA_LONGITUDE, longitude);
-            data.putExtra(Const.EXTRA_TITLE, titleEditText.getText().toString());
-            data.putExtra(Const.EXTRA_DETAILS, detailsTextView.getText());
-            setResult(RESULT_OK, data);
-            finish();
+                Intent data = new Intent();
+                data.putExtra(Const.EXTRA_LATITUDE, latitude);
+                data.putExtra(Const.EXTRA_LONGITUDE, longitude);
+                data.putExtra(Const.EXTRA_TITLE, titleEditText.getText().toString());
+                data.putExtra(Const.EXTRA_DETAILS, detailsTextView.getText());
+                setResult(RESULT_OK, data);
+                finish();
+            }
         });
     }
 }
